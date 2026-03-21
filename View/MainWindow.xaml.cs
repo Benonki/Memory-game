@@ -1,5 +1,8 @@
-﻿using Memory_game.ViewModel;
+﻿using Memory_game.Model.Services;
+using Memory_game.Model.Services.Impl;
+using Memory_game.ViewModel;
 using System.Windows;
+using System.Windows.Navigation;
 
 namespace Memory_game
 {
@@ -11,7 +14,7 @@ namespace Memory_game
         public MainWindow()
         {
             InitializeComponent();
-            MainWindowViewModel viewModel = new MainWindowViewModel();
+            MainWindowViewModel viewModel = new MainWindowViewModel(new NavigationServiceImpl());
             DataContext = viewModel;
         }
 

@@ -6,69 +6,21 @@
         xmlns:local="clr-namespace:Memory_game"
         xmlns:vm ="clr-namespace:Memory_game.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
-        
-        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
-        >
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    </Window.Resources>
-    
+        Title="Gra Memory" Height="160" Width="316"
+        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}">
+
     <Grid>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        
-        <!--Playing field-->
-        <Grid x:Name="BaseGrid" Grid.Column="1" Grid.Row="1">
-
-            <ItemsControl ItemsSource="{Binding Cards}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button 
-                            Command="{Binding DataContext.FlipCardCommand,
-                            RelativeSource ={RelativeSource AncestorType=ItemsControl}}"
-                            CommandParameter="{Binding}"
-                            >
-                            <TextBlock Text="{Binding Content}"
-                                       Visibility="{Binding IsFaceUp , Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                        </Button>
-                        
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            
-        </Grid>
-        
-        
-        
         <Grid>
-            
+            <Label Content="Dzisiaj tworzymy czy dołączamy do gry?" HorizontalAlignment="Left" Margin="18,20,0,0" VerticalAlignment="Top" Width="288" FontWeight="Bold" FontSize="14"/>
+            <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Height="42" Width="120"
+                    Command="{Binding OpenBoardCommand}"/>
+            <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Left" Margin="179,65,0,0" VerticalAlignment="Top" Click="Button_Click_1" Height="42" Width="112"/>
+            <Label Content="LUB" HorizontalAlignment="Left" Margin="142,74,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
         </Grid>
-        
 
     </Grid>
-        Title="Gra Memory" Height="160" Width="316">
-    <Grid>
-        <Label Content="Dzisiaj tworzymy czy dołączamy do gry?" HorizontalAlignment="Left" Margin="18,20,0,0" VerticalAlignment="Top" Width="288" FontWeight="Bold" FontSize="14"/>
-        <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Click="Button_Click" Height="42" Width="120"/>
-        <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Left" Margin="179,65,0,0" VerticalAlignment="Top" Click="Button_Click_1" Height="42" Width="112"/>
-        <Label Content="LUB" HorizontalAlignment="Left" Margin="142,74,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
-    </Grid>
+        
+   
 </Window>

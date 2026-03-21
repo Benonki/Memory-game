@@ -1,0 +1,57 @@
+﻿<Window x:Class="Memory_game.View.BoardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Memory_game.View"
+        xmlns:vm ="clr-namespace:Memory_game.ViewModel"
+        mc:Ignorable="d"
+        Title="BoardWindow" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance Type=vm:BoardWindowViewModel}">
+    
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+
+        <!--Playing field-->
+        <Grid x:Name="BaseGrid" Grid.Column="1" Grid.Row="1">
+
+            <ItemsControl ItemsSource="{Binding Cards}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button 
+            Command="{Binding DataContext.FlipCardCommand,
+            RelativeSource ={RelativeSource AncestorType=ItemsControl}}"
+            CommandParameter="{Binding}"
+            >
+                            <TextBlock Text="{Binding Content}"
+                       Visibility="{Binding IsFaceUp , Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        </Button>
+
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </Grid>
+    </Grid>
+</Window>
