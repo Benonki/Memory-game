@@ -5,8 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Memory_game"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Gra Memory" Height="160" Width="316">
     <Grid>
-
+        <Label Content="Dzisiaj tworzymy czy dołączamy do gry?" HorizontalAlignment="Left" Margin="18,20,0,0" VerticalAlignment="Top" Width="288" FontWeight="Bold" FontSize="14"/>
+        <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Click="Button_Click" Height="42" Width="120"/>
+        <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Left" Margin="179,65,0,0" VerticalAlignment="Top" Click="Button_Click_1" Height="42" Width="112"/>
+        <Label Content="LUB" HorizontalAlignment="Left" Margin="142,74,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
     </Grid>
 </Window>
