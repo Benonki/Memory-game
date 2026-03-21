@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace Memory_game.MVVM
 {
-    internal class RelayCommand : ICommand
+    public class RelayCommand : ICommand
     {
         private Action<Object> execute;
         private Func<object, bool> canExecute;
