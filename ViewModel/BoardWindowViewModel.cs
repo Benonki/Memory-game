@@ -5,37 +5,64 @@ namespace Memory_game.ViewModel
 {
     public class BoardWindowViewModel : ViewModelBase
     {
-        int row = 3;
-        int column = 3;
+        private int _rows;
+        private int _columns;
 
         public ObservableCollection<CardViewModel> Cards { get; set; } = new ObservableCollection<CardViewModel>();
 
         public RelayCommand FlipCardCommand => new RelayCommand(execute => FlipCard((CardViewModel)execute), canExecute => true);
 
-        public BoardWindowViewModel()
+        public BoardWindowViewModel(int rows, int columns)
         {
-            for (int i = 0; i < Rows * Columns; i++)
+            _rows = rows;
+            _columns = columns;
+
+            InitializeCards();
+        }
+
+        private void InitializeCards()
+        {
+            int totalCards = Rows * Columns;
+            for (int i = 0; i < totalCards / 2; i++)
             {
-                Cards.Add(new CardViewModel(i.ToString()));
+                string content = (i + 1).ToString();
+                Cards.Add(new CardViewModel(content));
+                Cards.Add(new CardViewModel(content));
+            }
+
+            ShuffleCards();
+        }
+
+        private void ShuffleCards()
+        {
+            Random rng = new Random();
+            int n = Cards.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rng.Next(n + 1);
+                var value = Cards[k];
+                Cards[k] = Cards[n];
+                Cards[n] = value;
             }
         }
 
         public int Rows
         {
-            get => row;
+            get => _rows;
             set
             {
-                row = value;
+                _rows = value;
                 OnPropertyChanged();
             }
         }
 
         public int Columns
         {
-            get => column;
+            get => _columns;
             set
             {
-                column = value;
+                _columns = value;
                 OnPropertyChanged();
             }
         }
@@ -47,7 +74,5 @@ namespace Memory_game.ViewModel
             else
                 card.IsFaceUp = true;
         }
-
-
     }
 }

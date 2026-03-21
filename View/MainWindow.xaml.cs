@@ -2,13 +2,9 @@
 using Memory_game.Model.Services.Impl;
 using Memory_game.ViewModel;
 using System.Windows;
-using System.Windows.Navigation;
 
 namespace Memory_game
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -16,16 +12,6 @@ namespace Memory_game
             InitializeComponent();
             MainWindowViewModel viewModel = new MainWindowViewModel(new NavigationServiceImpl());
             DataContext = viewModel;
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

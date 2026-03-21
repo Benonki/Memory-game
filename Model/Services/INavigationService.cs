@@ -2,6 +2,8 @@
 {
     public interface INavigationService
     {
-        void OpenBoard();
+        void OpenBoardSetup();
+        void OpenBoard(int rows, int columns);
+        void OpenMainWindow();
     }
 }
