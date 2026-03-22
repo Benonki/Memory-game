@@ -40,14 +40,13 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button 
-            Command="{Binding DataContext.FlipCardCommand,
-            RelativeSource ={RelativeSource AncestorType=ItemsControl}}"
-            CommandParameter="{Binding}"
-            >
-                            <TextBlock Text="{Binding Content}"
-                       Visibility="{Binding IsFaceUp , Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            Command="{Binding DataContext.FlipCardCommand,
+                            RelativeSource ={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}"
+                        >
+                                <Image Source="{Binding ImagePath}"
+                                       Visibility="{Binding IsFaceUp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         </Button>
-
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
