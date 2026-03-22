@@ -25,9 +25,10 @@ namespace Memory_game.ViewModel
             int totalCards = Rows * Columns;
             for (int i = 0; i < totalCards / 2; i++)
             {
-                string content = (i + 1).ToString();
-                Cards.Add(new CardViewModel(content));
-                Cards.Add(new CardViewModel(content));
+                int pairId = i + 1;
+                string imagePath = $"/Assets/Cards/{pairId}.png";
+                Cards.Add(new CardViewModel(pairId, imagePath));
+                Cards.Add(new CardViewModel(pairId, imagePath));
             }
 
             ShuffleCards();

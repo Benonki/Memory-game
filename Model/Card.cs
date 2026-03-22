@@ -2,7 +2,8 @@
 {
     public class Card
     {
-        public string content { get; set; } = string.Empty;
+        public int pairId { get; set; }
+        public string imagePath { get; set; } = string.Empty;
         public bool isFaceUp { get; set; } = false;
         public bool isMatched { get; set; }
     }

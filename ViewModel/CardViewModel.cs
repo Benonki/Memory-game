@@ -7,14 +7,19 @@ namespace Memory_game.ViewModel
     {
         private Card card;
 
-        public CardViewModel(string pattern)
+        public CardViewModel(int pairId, string imagePath)
         {
-            card = new Card { content = pattern };
+            card = new Card{pairId = pairId, imagePath = imagePath};
         }
 
-        public string Content
-        { 
-            get => card.content; 
+        public int PairId
+        {
+            get => card.pairId;
+        }
+
+        public string ImagePath
+        {
+            get => card.imagePath;
         }
 
         public bool IsFaceUp
