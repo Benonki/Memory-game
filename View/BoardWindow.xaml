@@ -6,30 +6,40 @@
         xmlns:local="clr-namespace:Memory_game.View"
         xmlns:vm ="clr-namespace:Memory_game.ViewModel"
         mc:Ignorable="d"
-        Title="BoardWindow" Height="450" Width="800"
+        Title="Memory Game" Height="450" Width="800"
         d:DataContext="{d:DesignInstance Type=vm:BoardWindowViewModel}">
-    
+
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-    </Window.Resources>
-    
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
 
+        <Style x:Key="CardButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Background" Value="LightGray"/>
+            <Setter Property="BorderBrush" Value="DarkGray"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="Gray"/>
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <Border Grid.Row="0" Background="LightGray" Padding="10" Margin="5">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Wynik: " FontSize="18" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Score}" FontSize="18" FontWeight="Bold" Foreground="Green"/>
+            </StackPanel>
+        </Border>
 
-        <!--Playing field-->
-        <Grid x:Name="BaseGrid" Grid.Column="1" Grid.Row="1">
-
+        <Grid Grid.Row="1" Margin="10">
             <ItemsControl ItemsSource="{Binding Cards}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -40,17 +50,23 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button 
-                            Command="{Binding DataContext.FlipCardCommand,
-                            RelativeSource ={RelativeSource AncestorType=ItemsControl}}"
+                            Command="{Binding DataContext.FlipCardCommand,RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                             CommandParameter="{Binding}"
-                        >
-                                <Image Source="{Binding ImagePath}"
-                                       Visibility="{Binding IsFaceUp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            Style="{StaticResource CardButtonStyle}"
+                            IsEnabled="{Binding DataContext.CanInteract, RelativeSource={RelativeSource AncestorType=Window}}">
+                            <Grid>
+                                <Border Background="Gray" 
+                                        Visibility="{Binding IsFaceUp, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
+                                    <TextBlock Text="?" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Foreground="White"/>
+                                </Border>
+                                <Image Source="{Binding ImagePath}" 
+                                       Visibility="{Binding IsFaceUp, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Stretch="Uniform"/>
+                            </Grid>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-
         </Grid>
     </Grid>
 </Window>

@@ -31,5 +31,19 @@ namespace Memory_game.ViewModel
                 OnPropertyChanged();
             }
         }
+
+        public bool IsMatched
+        {
+            get => card.isMatched;
+            set
+            {
+                card.isMatched = value;
+                OnPropertyChanged();
+                if (value)
+                {
+                    IsFaceUp = true;
+                }
+            }
+        }
     }
 }
