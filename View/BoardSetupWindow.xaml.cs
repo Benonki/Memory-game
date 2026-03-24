@@ -6,10 +6,10 @@ namespace Memory_game.View
 {
     public partial class BoardSetupWindow : Window
     {
-        public BoardSetupWindow(INavigationService navigationService)
+        public BoardSetupWindow(INavigationService navigationService, ICardDeckService deckService)
         {
             InitializeComponent();
-            BoardSetupViewModel viewModel = new BoardSetupViewModel(navigationService);
+            BoardSetupViewModel viewModel = new BoardSetupViewModel(navigationService, deckService);
             DataContext = viewModel;
             Owner = Application.Current.MainWindow;
         }

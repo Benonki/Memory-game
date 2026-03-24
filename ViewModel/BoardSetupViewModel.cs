@@ -10,10 +10,14 @@ namespace Memory_game.ViewModel
         private string _rows = "4";
         private string _columns = "4";
         private string _errorMessage = string.Empty;
+        private readonly ICardDeckService _deckService;
+        private string _selectedDeck = "Default";
 
-        public BoardSetupViewModel(INavigationService navigationService)
+        public BoardSetupViewModel(INavigationService navigationService, ICardDeckService deckService)
         {
             _navigationService = navigationService;
+            _deckService = deckService;
+            _selectedDeck = _navigationService.SelectedDeck;
         }
 
         public string Rows
@@ -46,6 +50,16 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public string SelectedDeck
+        {
+            get => _selectedDeck;
+            set
+            {
+                _selectedDeck = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand StartCommand => new RelayCommand(execute => Start(), canExecute => true);
 
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
@@ -67,8 +81,17 @@ namespace Memory_game.ViewModel
                     return;
                 }
 
+                int availableCards = _deckService.GetCardCount(SelectedDeck);
+                if (totalCards / 2 > availableCards)
+                {
+                    ErrorMessage = $"Wybrany zestaw kart '{SelectedDeck}' ma tylko {availableCards} kart, a potrzebujesz {totalCards / 2}. Wybierz inny zestaw lub zmniejsz wymiary planszy.";
+                    return;
+                }
+
                 ErrorMessage = string.Empty;
-                _navigationService.OpenBoard(rows, columns);
+
+                _navigationService.SelectedDeck = SelectedDeck;
+                _navigationService.OpenBoard(rows, columns, SelectedDeck);
             }
             else
             {

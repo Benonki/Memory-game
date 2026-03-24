@@ -9,6 +9,8 @@ namespace Memory_game.ViewModel
 
         public RelayCommand OpenBoardCommand => new RelayCommand(execute => navigationService.OpenBoardSetup(), canExecute => true);
 
+        public RelayCommand OpenCardDeckWindowCommand => new RelayCommand(execute => navigationService.OpenCardDeckWindow(), canExecute => true);
+
         public MainWindowViewModel(INavigationService navigation)
         {
             navigationService = navigation;

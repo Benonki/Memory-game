@@ -6,15 +6,17 @@ namespace Memory_game.Model.Services.Impl
 {
     public class NavigationServiceImpl : INavigationService
     {
+        private readonly ICardDeckService _deckService = new CardDeckServiceImpl();
+        public string SelectedDeck { get; set; } = "Default";
         public void OpenBoardSetup()
         {
-            BoardSetupWindow setupWindow = new BoardSetupWindow(this);
+            BoardSetupWindow setupWindow = new BoardSetupWindow(this, _deckService);
             setupWindow.ShowDialog();
         }
 
-        public void OpenBoard(int rows, int columns)
+        public void OpenBoard(int rows, int columns, string deckName)
         {
-            BoardWindow boardWindow = new BoardWindow(rows, columns);
+            BoardWindow boardWindow = new BoardWindow(rows, columns, deckName, _deckService);
             boardWindow.Show();
 
             foreach (Window window in Application.Current.Windows)
@@ -54,6 +56,12 @@ namespace Memory_game.Model.Services.Impl
                     break;
                 }
             }
+        }
+
+        public void OpenCardDeckWindow()
+        {
+            CardDeckWindow cardDeckWindow = new CardDeckWindow(this, _deckService);
+            cardDeckWindow.ShowDialog();
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Memory_game.MVVM;
+﻿using Memory_game.Model.Services;
+using Memory_game.MVVM;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows.Threading;
 
 namespace Memory_game.ViewModel
@@ -13,6 +15,7 @@ namespace Memory_game.ViewModel
         private CardViewModel? _secondSelectedCard;
         private bool _isProcessingMove;
         private DispatcherTimer? _delayTimer;
+        private readonly ICardDeckService _deckService;
 
         public ObservableCollection<CardViewModel> Cards { get; set; } = new ObservableCollection<CardViewModel>();
 
@@ -58,7 +61,7 @@ namespace Memory_game.ViewModel
             }
         }
 
-        public BoardWindowViewModel(int rows, int columns)
+        public BoardWindowViewModel(int rows, int columns, string deckName, ICardDeckService deckService)
         {
             _rows = rows;
             _columns = columns;
@@ -66,17 +69,20 @@ namespace Memory_game.ViewModel
             _firstSelectedCard = null;
             _secondSelectedCard = null;
             CanInteract = true;
+            _deckService = deckService;
 
-            InitializeCards();
+            InitializeCards(deckName);
         }
 
-        private void InitializeCards()
+        private void InitializeCards(string deckName)
         {
             int totalCards = Rows * Columns;
+            string[] imageFiles = _deckService.GetCardsFromDeck(deckName);
+
             for (int i = 0; i < totalCards / 2; i++)
             {
                 int pairId = i + 1;
-                string imagePath = $"/Assets/Cards/{pairId}.png";
+                string imagePath = imageFiles[i];
                 Cards.Add(new CardViewModel(pairId, imagePath));
                 Cards.Add(new CardViewModel(pairId, imagePath));
             }
