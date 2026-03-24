@@ -6,21 +6,21 @@
         xmlns:local="clr-namespace:Memory_game"
         xmlns:vm ="clr-namespace:Memory_game.ViewModel"
         mc:Ignorable="d"
-        Title="Gra Memory" Height="160" Width="316"
+        Title="Gra Memory" Height="250" Width="316"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}">
 
     <Grid>
 
 
         <Grid>
-            <Label Content="Dzisiaj tworzymy czy dołączamy do gry?" HorizontalAlignment="Left" Margin="18,20,0,0" VerticalAlignment="Top" Width="288" FontWeight="Bold" FontSize="14"/>
-            <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Height="42" Width="120"
+            <Label Content="Menu" HorizontalAlignment="Left" Margin="128,10,0,0" VerticalAlignment="Top" Width="50" FontWeight="Bold" FontSize="14"/>
+            <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Left" Margin="97,49,0,0" VerticalAlignment="Top" Height="42" Width="112"
                     Command="{Binding OpenBoardCommand}"/>
-            <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Left" Margin="179,65,0,0" VerticalAlignment="Top" Height="42" Width="112"/>
-            <Label Content="LUB" HorizontalAlignment="Left" Margin="142,74,0,0" VerticalAlignment="Top" FontWeight="Bold"/>
+            <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Left" Margin="97,100,0,0" VerticalAlignment="Top" Height="42" Width="112"/>
+            <Button Content="Wybierz talię kart" HorizontalAlignment="Left" Margin="97,147,0,0" VerticalAlignment="Top" Height="42" Width="112" Command="{Binding OpenCardDeckWindowCommand}"/>
         </Grid>
 
     </Grid>
-        
-   
+
+
 </Window>
