@@ -45,6 +45,7 @@
         <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,5">
             <Button Content="Dodaj karty" Width="100" Height="30" Margin="5" Command="{Binding AddCardsCommand}"/>
             <Button Content="Usuń talię" Width="100" Height="30" Margin="5" Command="{Binding DeleteDeckCommand}"/>
+            <Button Content="Przejrzyj karty" Width="100" Height="30" Margin="5" Command="{Binding SeeCardDeckPreviewCommand}"/>
         </StackPanel>
 
         <TextBlock Grid.Row="4" Text="{Binding ErrorMessage}" Foreground="red" HorizontalAlignment="Center" Margin="0,5" TextAlignment="Center" TextWrapping="Wrap"/>

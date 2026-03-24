@@ -4,6 +4,8 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using Memory_game.View;
 using System.Windows;
+using System.IO;
+using System.Diagnostics;
 
 namespace Memory_game.ViewModel
 {
@@ -21,6 +23,7 @@ namespace Memory_game.ViewModel
         public RelayCommand DeleteDeckCommand => new RelayCommand(execute => DeleteDeck(), canExecute => !string.IsNullOrEmpty(SelectedDeck));
         public RelayCommand AddCardsCommand => new RelayCommand(execute => AddCards(), canExecute => !string.IsNullOrEmpty(SelectedDeck));
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
+        public RelayCommand SeeCardDeckPreviewCommand => new RelayCommand(execute => SeeCardDeckPreview(), canExecute => !string.IsNullOrEmpty(SelectedDeck));
 
         public CardDeckViewModel(INavigationService navigationService, ICardDeckService deckService)
         {
@@ -135,6 +138,17 @@ namespace Memory_game.ViewModel
         private void Cancel()
         {
             Application.Current.Windows.OfType<CardDeckWindow>().FirstOrDefault()?.Close();
+        }
+
+        private void SeeCardDeckPreview()
+        {
+            string deckPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MemoryGame", "Decks", SelectedDeck);
+
+            if (Directory.Exists(deckPath))
+            {
+                Process.Start("explorer.exe", deckPath);
+            }
+
         }
     }
 }
