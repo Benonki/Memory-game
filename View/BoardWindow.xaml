@@ -55,13 +55,8 @@
                             Style="{StaticResource CardButtonStyle}"
                             IsEnabled="{Binding DataContext.CanInteract, RelativeSource={RelativeSource AncestorType=Window}}">
                             <Grid>
-                                <Border Background="Gray" 
-                                        Visibility="{Binding IsFaceUp, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=true}">
-                                    <TextBlock Text="?" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Foreground="White"/>
-                                </Border>
                                 <Image Source="{Binding ImagePath}" 
-                                       Visibility="{Binding IsFaceUp, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                       Stretch="Uniform"/>
+                                       Visibility="{Binding IsFaceUp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             </Grid>
                         </Button>
                     </DataTemplate>
