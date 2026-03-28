@@ -11,13 +11,26 @@
 
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid Grid.Row="0">
             <Label Content="Menu" HorizontalAlignment="Left" Margin="128,10,0,0" VerticalAlignment="Top" Width="50" FontWeight="Bold" FontSize="14"/>
             <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Left" Margin="97,49,0,0" VerticalAlignment="Top" Height="42" Width="112"
                     Command="{Binding OpenBoardCommand}"/>
             <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Left" Margin="97,100,0,0" VerticalAlignment="Top" Height="42" Width="112"/>
             <Button Content="Wybierz talię kart" HorizontalAlignment="Left" Margin="97,147,0,0" VerticalAlignment="Top" Height="42" Width="112" Command="{Binding OpenCardDeckWindowCommand}"/>
+            
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button Content="Connect" Height="50" Width="50" Command="{Binding ConnectToServer}"/>
+            <Button Grid.Row="1" Content="Send message" Height="50" Width="50" Command="{Binding SendMessageToSever}"/>
         </Grid>
 
     </Grid>

@@ -10,7 +10,7 @@ namespace Memory_game
         public MainWindow()
         {
             InitializeComponent();
-            MainWindowViewModel viewModel = new MainWindowViewModel(new NavigationServiceImpl());
+            MainWindowViewModel viewModel = new MainWindowViewModel(new NavigationServiceImpl(), new LobbyService());
             DataContext = viewModel;
         }
     }

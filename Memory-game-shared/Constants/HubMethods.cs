@@ -1,0 +1,8 @@
+﻿namespace Memory_game_shared.Constants
+{
+    public static class HubMethods
+    {
+        public const string SendMessage = "SendMessage";
+        public const string ReceiveMessage = "ReceiveMessage";
+    }
+}
