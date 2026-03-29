@@ -63,5 +63,11 @@ namespace Memory_game.Model.Services.Impl
             CardDeckWindow cardDeckWindow = new CardDeckWindow(this, _deckService);
             cardDeckWindow.ShowDialog();
         }
+
+        public void OpenServerListWindow()
+        {
+            ServerListWindow serverListWindow = new ServerListWindow();
+            serverListWindow.ShowDialog();
+        }
     }
 }

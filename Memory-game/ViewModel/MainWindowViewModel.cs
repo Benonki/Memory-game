@@ -13,9 +13,8 @@ namespace Memory_game.ViewModel
 
         public RelayCommand OpenCardDeckWindowCommand => new RelayCommand(execute => navigationService.OpenCardDeckWindow(), canExecute => true);
 
-        public RelayCommand ConnectToServer => new RelayCommand(async execute => await lobbyService.ConnectAsync(), canExecute => true);
-
         public RelayCommand SendMessageToSever => new RelayCommand(async execute => await lobbyService.SendMessageAsync(), canExecute => true);
+        public RelayCommand OpenServerList => new RelayCommand(execute => navigationService.OpenServerListWindow(), canExecute => true);
 
         public MainWindowViewModel(INavigationService navigation, ILobbyService lobby)
         {

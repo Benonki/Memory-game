@@ -6,31 +6,43 @@
         xmlns:local="clr-namespace:Memory_game"
         xmlns:vm ="clr-namespace:Memory_game.ViewModel"
         mc:Ignorable="d"
-        Title="Gra Memory" Height="250" Width="316"
-        d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}">
+        Title="Gra Memory" Height="500" Width="316"
+        d:DataContext="{d:DesignInstance Type=vm:ServerListWindowViewModel}">
 
     <Grid>
 
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
-            <Label Content="Menu" HorizontalAlignment="Left" Margin="128,10,0,0" VerticalAlignment="Top" Width="50" FontWeight="Bold" FontSize="14"/>
-            <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Left" Margin="97,49,0,0" VerticalAlignment="Top" Height="42" Width="112"
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".2*"/>
+                <RowDefinition Height=".3*"/>
+                <RowDefinition Height=".3*"/>
+                <RowDefinition Height=".3*"/>
+            </Grid.RowDefinitions>
+
+            <Label Content="Menu" HorizontalAlignment="Center" VerticalAlignment="Center" Width="50" FontWeight="Bold" FontSize="14"/>
+            <Button Content="Stwórz nowe&#xD;&#xA;    Lobby" HorizontalAlignment="Center" VerticalAlignment="Center" Height="42" Width="112"
+                    Grid.Row="1"
                     Command="{Binding OpenBoardCommand}"/>
-            <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Left" Margin="97,100,0,0" VerticalAlignment="Top" Height="42" Width="112"/>
-            <Button Content="Wybierz talię kart" HorizontalAlignment="Left" Margin="97,147,0,0" VerticalAlignment="Top" Height="42" Width="112" Command="{Binding OpenCardDeckWindowCommand}"/>
+            <Button Content="       Dołącz do &#xA;istniejącego Lobby" HorizontalAlignment="Center" VerticalAlignment="Center" Height="42" Width="112"
+                    Grid.Row="2"
+                    Command="{Binding OpenServerList}"/>
+            <Button Content="Wybierz talię kart" HorizontalAlignment="Center" VerticalAlignment="Center" Height="42" Width="112"
+                    Grid.Row="3"
+                    Command="{Binding OpenCardDeckWindowCommand}"/>
             
         </Grid>
         <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Button Content="Connect" Height="50" Width="50" Command="{Binding ConnectToServer}"/>
-            <Button Grid.Row="1" Content="Send message" Height="50" Width="50" Command="{Binding SendMessageToSever}"/>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1" Content="Send message" Height="50" Width="100" Command="{Binding SendMessageToSever}"/>
         </Grid>
 
     </Grid>

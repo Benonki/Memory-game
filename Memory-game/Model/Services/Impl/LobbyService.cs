@@ -7,15 +7,15 @@ namespace Memory_game.Model.Services.Impl
     public class LobbyService : ILobbyService
     {
 
-        HubConnection connection;
+        HubConnection? connection;
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(string serverAddress)
         {
             Debug.WriteLine("Trying to connect");
             try
             {
                 connection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:5000/gamehub")
+                .WithUrl($"http://{serverAddress}/gamehub")
                 .Build();
 
                 connection.On<string>(HubMethods.ReceiveMessage, (message) =>
@@ -30,18 +30,19 @@ namespace Memory_game.Model.Services.Impl
             {
                 Debug.WriteLine(e.Message);
             }
-            
 
         }
 
         public async Task DisconnectAsync()
         {
-            await connection.StopAsync();
+            if(connection != null)
+                await connection.StopAsync();
         }
 
         public async Task SendMessageAsync()
         {
-            await connection.InvokeAsync(HubMethods.SendMessage, "Message from client");
+            if(connection != null )
+                await connection.InvokeAsync(HubMethods.SendMessage, "Message from client");
         }
     }
 }

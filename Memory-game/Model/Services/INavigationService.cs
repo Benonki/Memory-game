@@ -6,6 +6,7 @@
         void OpenBoard(int rows, int columns, string deckName);
         void OpenMainWindow();
         void OpenCardDeckWindow();
+        void OpenServerListWindow();
         string SelectedDeck { get; set; }
 
     }

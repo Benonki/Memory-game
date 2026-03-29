@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Memory_game.Model.Services
 {
-    public interface ILobbyService
+    public interface IServerListener
     {
-        public Task ConnectAsync(string serverAddress);
-        public Task SendMessageAsync();
-        public Task DisconnectAsync();
-
+        event Action<string> ServerFound;
+        public Task StartListeningAsync();
+        public void StopListening();
     }
 }
