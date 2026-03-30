@@ -127,12 +127,14 @@ namespace Memory_game.ViewModel
             _navigationService.OpenMainWindow();
         }
 
-        private void HandleGameStarted(string message)
+        private void HandleGameStarted(GameState gameState)
         {
+            _lobbyService.OnGameStarted -= HandleGameStarted;
+
             Application.Current.Dispatcher.Invoke(() =>
             {
                 _navigationService.SelectedDeck = SelectedDeck;
-                _navigationService.OpenBoard(int.Parse(Rows), int.Parse(Columns), SelectedDeck);
+                _navigationService.OpenBoard(gameState, SelectedDeck);
             });
         }
     }

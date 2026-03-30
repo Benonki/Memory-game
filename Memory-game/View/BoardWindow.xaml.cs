@@ -1,15 +1,16 @@
 ﻿using Memory_game.Model.Services;
 using Memory_game.ViewModel;
+using Memory_game_shared.Models;
 using System.Windows;
 
 namespace Memory_game.View
 {
     public partial class BoardWindow : Window
     {
-        public BoardWindow(int rows, int columns, string deckName, ICardDeckService deckService)
+        public BoardWindow(GameState gameState, string deckName, ICardDeckService deckService)
         {
             InitializeComponent();
-            BoardWindowViewModel viewModel = new BoardWindowViewModel(rows, columns, deckName, deckService);
+            BoardWindowViewModel viewModel = new BoardWindowViewModel(gameState, deckName, deckService);
             DataContext = viewModel;
         }
     }

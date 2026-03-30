@@ -1,7 +1,9 @@
 ﻿using Memory_game.Model.Services;
 using Memory_game.MVVM;
+using Memory_game_shared.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows;
 
 namespace Memory_game.ViewModel
 {
@@ -9,14 +11,16 @@ namespace Memory_game.ViewModel
     {
         private IServerListener _serverListener;
         private ILobbyService _lobbyService;
+        private INavigationService _navigationService;
 
         public ObservableCollection<string> AvailableServers { get; } = new();
 
         public RelayCommand ConnectToSevrer => new RelayCommand(async execute => await JoinGameAsync(), canExecute => true);
-        public ServerListWindowViewModel(IServerListener serverListener, ILobbyService lobbyService)
+        public ServerListWindowViewModel(IServerListener serverListener, ILobbyService lobbyService, INavigationService navigationService)
         {
             _serverListener = serverListener;
             _lobbyService = lobbyService;
+            _navigationService = navigationService;
 
             _serverListener.ServerFound += (serverAddress =>
             {
@@ -29,7 +33,8 @@ namespace Memory_game.ViewModel
             });
 
             _serverListener.StartListeningAsync();
-            _lobbyService = lobbyService;
+            _lobbyService.OnGameStarted += HandleGameStarter;
+
         }
 
         private string _selectedServer;
@@ -47,6 +52,15 @@ namespace Memory_game.ViewModel
         {
             await _lobbyService.ConnectAsync(SelectedServer);
             await _lobbyService.JoinGameAsync();
+        }
+
+        private void HandleGameStarter(GameState gameState)
+        {
+            _lobbyService.OnGameStarted -= HandleGameStarter;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _navigationService.OpenBoard(gameState, "Default");
+            });
         }
 
         public void CleanUp()

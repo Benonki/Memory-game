@@ -9,8 +9,7 @@ namespace Memory_game.Model.Services
 {
     public interface ILobbyService
     {
-        public event Action<string> OnGameStarted;
-        public event Action<GameState> OnGameStartedWithState;
+        public event Action<GameState> OnGameStarted;
         public Task CreateNewGame(GameSettings gameSettings);
         public Task ConnectAsync(string serverAddress);
         public Task JoinGameAsync();

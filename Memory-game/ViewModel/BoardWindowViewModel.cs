@@ -1,5 +1,6 @@
 ﻿using Memory_game.Model.Services;
 using Memory_game.MVVM;
+using Memory_game_shared.Models;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Threading;
@@ -61,33 +62,28 @@ namespace Memory_game.ViewModel
             }
         }
 
-        public BoardWindowViewModel(int rows, int columns, string deckName, ICardDeckService deckService)
+        public BoardWindowViewModel(GameState gameState, string deckName, ICardDeckService deckService)
         {
-            _rows = rows;
-            _columns = columns;
+            _rows = gameState.settings.Rows;
+            _columns = gameState.settings.Columns;
             _score = 0;
             _firstSelectedCard = null;
             _secondSelectedCard = null;
             CanInteract = true;
             _deckService = deckService;
 
-            InitializeCards(deckName);
+            InitializeCards(gameState.CardsOnBoard ,deckName);
         }
 
-        private void InitializeCards(string deckName)
+        private void InitializeCards(List<Card> cardsFromServer,string deckName)
         {
             int totalCards = Rows * Columns;
             string[] imageFiles = _deckService.GetCardsFromDeck(deckName);
 
-            for (int i = 0; i < totalCards / 2; i++)
+            foreach(Card card in cardsFromServer)
             {
-                int pairId = i + 1;
-                string imagePath = imageFiles[i];
-                Cards.Add(new CardViewModel(pairId, imagePath));
-                Cards.Add(new CardViewModel(pairId, imagePath));
+                Cards.Add(new CardViewModel(card.pairId, card.imagePath));
             }
-
-            ShuffleCards();
         }
 
         private void ShuffleCards()

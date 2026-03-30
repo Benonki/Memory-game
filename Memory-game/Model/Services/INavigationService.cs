@@ -1,9 +1,11 @@
-﻿namespace Memory_game.Model.Services
+﻿using Memory_game_shared.Models;
+
+namespace Memory_game.Model.Services
 {
     public interface INavigationService
     {
         void OpenBoardSetup();
-        void OpenBoard(int rows, int columns, string deckName);
+        void OpenBoard(GameState gameState, string deckName);
         void OpenMainWindow();
         void OpenCardDeckWindow();
         void OpenServerListWindow();

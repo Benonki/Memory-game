@@ -1,5 +1,6 @@
 ﻿using Memory_game.View;
 using Memory_game.ViewModel;
+using Memory_game_shared.Models;
 using System.Windows;
 
 namespace Memory_game.Model.Services.Impl
@@ -14,14 +15,14 @@ namespace Memory_game.Model.Services.Impl
             setupWindow.ShowDialog();
         }
 
-        public void OpenBoard(int rows, int columns, string deckName)
+        public void OpenBoard(GameState gameState, string deckName)
         {
-            BoardWindow boardWindow = new BoardWindow(rows, columns, deckName, _deckService);
+            BoardWindow boardWindow = new BoardWindow(gameState, deckName, _deckService);
             boardWindow.Show();
 
             foreach (Window window in Application.Current.Windows)
             {
-                if (window is BoardSetupWindow)
+                if (window is BoardSetupWindow || window is ServerListWindow)
                 {
                     window.Close();
                     break;

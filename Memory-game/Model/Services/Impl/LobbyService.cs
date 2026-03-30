@@ -9,8 +9,7 @@ namespace Memory_game.Model.Services.Impl
     {
 
         HubConnection? connection;
-        public event Action<string> OnGameStarted;
-        public event Action<GameState> OnGameStartedWithState;
+        public event Action<GameState> OnGameStarted;
 
         public async Task ConnectAsync(string serverAddress)
         {
@@ -35,10 +34,10 @@ namespace Memory_game.Model.Services.Impl
 
         private void HandleServerEvents()
         {
-            connection.On<string>(HubMethods.GameStarted, (message) =>
+            connection.On<GameState>(HubMethods.GameStarted, (gameState) =>
             {
-                Debug.WriteLine(message);
-                OnGameStarted?.Invoke(message);
+                Debug.WriteLine(gameState);
+                OnGameStarted?.Invoke(gameState);
             });
         }
 
