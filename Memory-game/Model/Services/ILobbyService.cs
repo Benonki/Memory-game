@@ -8,7 +8,8 @@ namespace Memory_game.Model.Services
 {
     public interface ILobbyService
     {
-        public Task JoinGame(string serverAddress);
+        public Task ConnectAsync(string serverAddress);
+        public Task JoinGameAsync();
         public Task SendMessageAsync();
         public Task DisconnectAsync();
 

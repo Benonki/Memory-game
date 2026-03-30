@@ -9,7 +9,7 @@ namespace Memory_game.Model.Services.Impl
 
         HubConnection? connection;
 
-        public async Task JoinGame(string serverAddress)
+        public async Task ConnectAsync(string serverAddress)
         {
             Debug.WriteLine("Trying to connect");
             try
@@ -17,11 +17,6 @@ namespace Memory_game.Model.Services.Impl
                 connection = new HubConnectionBuilder()
                 .WithUrl($"http://{serverAddress}/gamehub")
                 .Build();
-
-                connection.On<string>(HubMethods.GameStarted, (message) =>
-                {
-                    Debug.WriteLine($"Joined game gmae status: {message}");
-                });
 
                 connection.On<string>(HubMethods.ReceiveMessage, (message) =>
                 {
@@ -36,6 +31,14 @@ namespace Memory_game.Model.Services.Impl
                 Debug.WriteLine(e.Message);
             }
 
+        }
+
+        public async Task JoinGameAsync()
+        {
+            if (connection == null)
+                return;
+
+            await connection.InvokeAsync(HubMethods.JoinGame);
         }
 
         public async Task DisconnectAsync()

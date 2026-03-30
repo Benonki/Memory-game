@@ -11,7 +11,7 @@ namespace Memory_game.ViewModel
 
         public ObservableCollection<string> AvailableServers { get; } = new();
 
-        public RelayCommand ConnectToSevrer => new RelayCommand(async execute => await _lobbyService.JoinGame(SelectedServer), canExecute => true);
+        public RelayCommand ConnectToSevrer => new RelayCommand(async execute => await JoinGameAsync(), canExecute => true);
         public ServerListWindowViewModel(IServerListener serverListener, ILobbyService lobbyService)
         {
             _serverListener = serverListener;
@@ -40,6 +40,12 @@ namespace Memory_game.ViewModel
                 _selectedServer = value;
                 OnPropertyChanged();
             }
+        }
+
+        private async Task JoinGameAsync()
+        {
+            await _lobbyService.ConnectAsync(SelectedServer);
+            await _lobbyService.JoinGameAsync();
         }
 
 
