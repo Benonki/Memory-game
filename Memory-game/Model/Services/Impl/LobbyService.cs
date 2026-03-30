@@ -10,7 +10,7 @@ namespace Memory_game.Model.Services.Impl
 
         HubConnection? connection;
         public event Action<GameState> OnGameStarted;
-
+        public event Action<int> OnCardFlipped;
         public async Task ConnectAsync(string serverAddress)
         {
             Debug.WriteLine("Trying to connect");
@@ -39,6 +39,11 @@ namespace Memory_game.Model.Services.Impl
                 Debug.WriteLine(gameState);
                 OnGameStarted?.Invoke(gameState);
             });
+
+            connection.On<int>(HubMethods.FlipCard, (cardId) =>
+            {
+                OnCardFlipped?.Invoke(cardId);
+            });
         }
 
         public async Task JoinGameAsync()
@@ -65,6 +70,12 @@ namespace Memory_game.Model.Services.Impl
         {
             if(connection != null)
             await connection.InvokeAsync(HubMethods.CreateNewGame, gameSettings);
+        }
+
+        public async Task SendFlipCardAsync(int cardId)
+        {
+            if(connection != null)
+                await connection.InvokeAsync(HubMethods.FlipCard, cardId);
         }
     }
 }

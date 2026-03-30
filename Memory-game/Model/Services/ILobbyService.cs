@@ -10,6 +10,8 @@ namespace Memory_game.Model.Services
     public interface ILobbyService
     {
         public event Action<GameState> OnGameStarted;
+        public event Action<int> OnCardFlipped;
+        public Task SendFlipCardAsync(int cardId);
         public Task CreateNewGame(GameSettings gameSettings);
         public Task ConnectAsync(string serverAddress);
         public Task JoinGameAsync();

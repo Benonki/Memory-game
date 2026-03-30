@@ -3,6 +3,7 @@ using Memory_game.MVVM;
 using Memory_game_shared.Models;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace Memory_game.ViewModel
@@ -74,6 +75,7 @@ namespace Memory_game.ViewModel
             _deckService = deckService;
             _lobbyService = lobbyService;
 
+            _lobbyService.OnCardFlipped += HandleCardFlipped;
 
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
@@ -103,34 +105,54 @@ namespace Memory_game.ViewModel
             }
         }
 
-        private void FlipCard(CardViewModel card)
+        private void HandleCardFlipped(int cardId)
         {
-            if (!CanInteract)
-                return;
-
-            if (card.IsMatched)
-                return;
-
-            if (card.IsFaceUp)
-                return;
-
-            if (_firstSelectedCard != null && _secondSelectedCard != null)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                ResetSelectedCards();
-            }
+                var cardToFlip = Cards.FirstOrDefault(card => card.Id == cardId);
+                if (cardToFlip != null)
+                {
+                    cardToFlip.IsFaceUp = true;
+                }
+            });
+        }
 
-            if (_firstSelectedCard == null)
+        private async Task FlipCard(CardViewModel card)
+        {
+            if (card != null && !card.IsFaceUp && !card.IsMatched)
             {
-                card.IsFaceUp = true;
-                _firstSelectedCard = card;
-            }
-            else if (_secondSelectedCard == null && _firstSelectedCard != card)
-            {
-                card.IsFaceUp = true;
-                _secondSelectedCard = card;
-                CheckMatch();
+                await _lobbyService.SendFlipCardAsync(card.Id);
             }
         }
+
+        //private void FlipCard(CardViewModel card)
+        //{
+        //    if (!CanInteract)
+        //        return;
+
+        //    if (card.IsMatched)
+        //        return;
+
+        //    if (card.IsFaceUp)
+        //        return;
+
+        //    if (_firstSelectedCard != null && _secondSelectedCard != null)
+        //    {
+        //        ResetSelectedCards();
+        //    }
+
+        //    if (_firstSelectedCard == null)
+        //    {
+        //        card.IsFaceUp = true;
+        //        _firstSelectedCard = card;
+        //    }
+        //    else if (_secondSelectedCard == null && _firstSelectedCard != card)
+        //    {
+        //        card.IsFaceUp = true;
+        //        _secondSelectedCard = card;
+        //        CheckMatch();
+        //    }
+        //}
 
         private void CheckMatch()
         {

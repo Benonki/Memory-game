@@ -50,6 +50,18 @@ namespace Memory_game_server.Hubs
 
         }
 
+        public async Task FlipCard(int cardId)
+        {
+            Card cardToFlip = _gameState.CardsOnBoard.FirstOrDefault(card => card.id == cardId);
+
+            if (cardToFlip != null && !cardToFlip.isFaceUp)
+            {
+                cardToFlip.isFaceUp = true;
+
+                await Clients.All.SendAsync(HubMethods.FlipCard, cardId);
+            }
+        }
+
         private void GenerateBoard(GameState gameState)
         {
             int totalCards = gameState.settings.Rows * gameState.settings.Columns;
