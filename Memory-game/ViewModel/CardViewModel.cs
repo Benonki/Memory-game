@@ -1,5 +1,6 @@
 ﻿using Memory_game.Model;
 using Memory_game.MVVM;
+using Memory_game_shared.Models;
 
 namespace Memory_game.ViewModel
 {

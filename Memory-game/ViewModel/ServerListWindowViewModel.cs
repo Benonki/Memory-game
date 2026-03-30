@@ -11,7 +11,7 @@ namespace Memory_game.ViewModel
 
         public ObservableCollection<string> AvailableServers { get; } = new();
 
-        public RelayCommand ConnectToSevrer => new RelayCommand(async execute => await _lobbyService.ConnectAsync(SelectedServer), canExecute => true);
+        public RelayCommand ConnectToSevrer => new RelayCommand(async execute => await _lobbyService.JoinGame(SelectedServer), canExecute => true);
         public ServerListWindowViewModel(IServerListener serverListener, ILobbyService lobbyService)
         {
             _serverListener = serverListener;
