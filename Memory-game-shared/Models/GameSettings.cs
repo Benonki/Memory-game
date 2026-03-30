@@ -10,5 +10,6 @@ namespace Memory_game_shared.Models
     {
         public int Rows { get; set; }
         public int Columns { get; set; }
+        public string[] ImagePaths { get; set; }
     }
 }

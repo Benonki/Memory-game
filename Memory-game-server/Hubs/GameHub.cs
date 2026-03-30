@@ -11,6 +11,7 @@ namespace Memory_game_server.Hubs
 
         private static GameState _gameState = new GameState();
         private static List<string> _players = new List<string>();
+        private static List<int> _currentlyFlippedCards = new List<int>();
 
         public async Task SendMessage(string message)
         {
@@ -56,9 +57,9 @@ namespace Memory_game_server.Hubs
 
             List<Card> cardsToShuffle = new List<Card>();
 
-            for(int i = 1; i <= pairOfCards; i++)
+            for(int i = 0; i < pairOfCards; i++)
             {
-                string imagePath = $"Image{i}";
+                string imagePath = gameState.settings.ImagePaths[i];
 
                 cardsToShuffle.Add(new Card { pairId = i, imagePath = imagePath });
                 cardsToShuffle.Add(new Card { pairId = i, imagePath = imagePath });

@@ -101,6 +101,7 @@ namespace Memory_game.ViewModel
                 {
                     Rows = rows,
                     Columns = columns,
+                    ImagePaths = _deckService.GetCardsFromDeck(SelectedDeck) // Change to get it dynamically 
                 };
 
                 try

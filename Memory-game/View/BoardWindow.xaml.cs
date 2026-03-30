@@ -10,7 +10,7 @@ namespace Memory_game.View
         public BoardWindow(GameState gameState, string deckName, ICardDeckService deckService)
         {
             InitializeComponent();
-            BoardWindowViewModel viewModel = new BoardWindowViewModel(gameState, deckName, deckService);
+            BoardWindowViewModel viewModel = new BoardWindowViewModel(gameState, deckName, deckService, App.SharedLobbyService);
             DataContext = viewModel;
         }
     }

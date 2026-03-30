@@ -17,6 +17,7 @@ namespace Memory_game.ViewModel
         private bool _isProcessingMove;
         private DispatcherTimer? _delayTimer;
         private readonly ICardDeckService _deckService;
+        private readonly ILobbyService _lobbyService;
 
         public ObservableCollection<CardViewModel> Cards { get; set; } = new ObservableCollection<CardViewModel>();
 
@@ -62,7 +63,7 @@ namespace Memory_game.ViewModel
             }
         }
 
-        public BoardWindowViewModel(GameState gameState, string deckName, ICardDeckService deckService)
+        public BoardWindowViewModel(GameState gameState, string deckName, ICardDeckService deckService, ILobbyService lobbyService)
         {
             _rows = gameState.settings.Rows;
             _columns = gameState.settings.Columns;
@@ -71,6 +72,8 @@ namespace Memory_game.ViewModel
             _secondSelectedCard = null;
             CanInteract = true;
             _deckService = deckService;
+            _lobbyService = lobbyService;
+
 
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
@@ -82,7 +85,7 @@ namespace Memory_game.ViewModel
 
             foreach(Card card in cardsFromServer)
             {
-                Cards.Add(new CardViewModel(card.pairId, card.imagePath));
+                Cards.Add(new CardViewModel(card.id, card.pairId, card.imagePath));
             }
         }
 
