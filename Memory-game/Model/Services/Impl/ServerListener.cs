@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -15,21 +16,32 @@ namespace Memory_game.Model.Services.Impl
 
         public async Task StartListeningAsync()
         {
+            udpClient?.Close();
+            udpClient?.Dispose();
+
             udpClient = new UdpClient(7788);
             running = true;
 
             while (running)
             {
-                var result = await udpClient.ReceiveAsync();
-                var message = Encoding.UTF8.GetString(result.Buffer);
-
-                if (message.StartsWith("MEMORY_GAME_SERVER"))
+                try
                 {
-                    var port = message.Split(':')[1];
-                    var serverIP= result.RemoteEndPoint.Address.ToString();
+                    var result = await udpClient.ReceiveAsync();
+                    var message = Encoding.UTF8.GetString(result.Buffer);
 
-                    ServerFound?.Invoke($"{serverIP}:{port}");
+                    if (message.StartsWith("MEMORY_GAME_SERVER"))
+                    {
+                        var port = message.Split(':')[1];
+                        var serverIP = result.RemoteEndPoint.Address.ToString();
+
+                        ServerFound?.Invoke($"{serverIP}:{port}");
+                    }
+                }catch(Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                    break;
                 }
+               
             }
         }
 

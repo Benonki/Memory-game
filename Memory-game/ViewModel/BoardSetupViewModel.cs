@@ -1,6 +1,8 @@
 ﻿using Memory_game.MVVM;
 using Memory_game.Model.Services;
 using System.Windows;
+using Memory_game_shared.Models;
+using System.Diagnostics;
 
 namespace Memory_game.ViewModel
 {
@@ -11,13 +13,18 @@ namespace Memory_game.ViewModel
         private string _columns = "4";
         private string _errorMessage = string.Empty;
         private readonly ICardDeckService _deckService;
-        private string _selectedDeck = "Default";
+        private string _selectedDeck = "Default"; 
+        private readonly ILobbyService _lobbyService;
 
-        public BoardSetupViewModel(INavigationService navigationService, ICardDeckService deckService)
+        public BoardSetupViewModel(INavigationService navigationService, ICardDeckService deckService, ILobbyService lobbyService)
         {
             _navigationService = navigationService;
             _deckService = deckService;
             _selectedDeck = _navigationService.SelectedDeck;
+            _lobbyService = lobbyService;
+
+            _lobbyService.OnGameStarted += HandleGameStarted;
+
         }
 
         public string Rows
@@ -60,11 +67,11 @@ namespace Memory_game.ViewModel
             }
         }
 
-        public RelayCommand StartCommand => new RelayCommand(execute => Start(), canExecute => true);
+        public RelayCommand StartCommand => new RelayCommand(async execute => await Start(), canExecute => true);
 
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
 
-        private void Start()
+        private async Task Start()
         {
             if (int.TryParse(Rows, out int rows) && int.TryParse(Columns, out int columns))
             {
@@ -74,7 +81,7 @@ namespace Memory_game.ViewModel
                     ErrorMessage = $"Liczba kart ({rows} x {columns} = {totalCards}) musi być parzysta. Wybierz inne wymiary.";
                     return;
                 }
-           
+
                 if (rows < 2 || rows > 6 || columns < 2 || columns > 6)
                 {
                     ErrorMessage = "Wiersze i kolumny muszą być w zakresie 2-6";
@@ -88,10 +95,26 @@ namespace Memory_game.ViewModel
                     return;
                 }
 
-                ErrorMessage = string.Empty;
+                ErrorMessage = "Łączenie z serwerem";
 
-                _navigationService.SelectedDeck = SelectedDeck;
-                _navigationService.OpenBoard(rows, columns, SelectedDeck);
+                GameSettings gameSettings = new GameSettings
+                {
+                    Rows = rows,
+                    Columns = columns,
+                };
+
+                try
+                {
+                    await _lobbyService.ConnectAsync("localhost:5000");
+                    await _lobbyService.CreateNewGame(gameSettings);
+                    ErrorMessage = "Czekanie na drugiego gracza";
+                }catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                    ErrorMessage = "Nie udało się połączyć z serwerem";
+                }
+
+                
             }
             else
             {
@@ -102,6 +125,15 @@ namespace Memory_game.ViewModel
         private void Cancel()
         {
             _navigationService.OpenMainWindow();
+        }
+
+        private void HandleGameStarted(string message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                _navigationService.SelectedDeck = SelectedDeck;
+                _navigationService.OpenBoard(int.Parse(Rows), int.Parse(Columns), SelectedDeck);
+            });
         }
     }
 }

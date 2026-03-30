@@ -18,10 +18,22 @@ namespace Memory_game_server.Hubs
             await Clients.All.SendAsync(HubMethods.ReceiveMessage, "Message from server");
         }
 
+        public async Task CreateNewGame(GameSettings gameSettings)
+        {
+            _players.Clear();
+            _players.Add(Context.ConnectionId);
+        }
+
 
         public async Task JoinGame()
         {
-            _players.Add(Context.ConnectionId);
+            if (!_players.Contains(Context.ConnectionId))
+            {
+                _players.Add(Context.ConnectionId);
+                Debug.WriteLine("New player joined");
+
+            }
+           
 
             if(_players.Count == 2)
             {
@@ -33,6 +45,7 @@ namespace Memory_game_server.Hubs
             }
 
         }
+
 
 
     }

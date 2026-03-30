@@ -19,7 +19,7 @@ namespace Memory_game.ViewModel
         public MainWindowViewModel(INavigationService navigation, ILobbyService lobby)
         {
             navigationService = navigation;
-            lobbyService = new LobbyService();
+            lobbyService = App.SharedLobbyService;
 
         }
     }

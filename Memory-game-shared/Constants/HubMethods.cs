@@ -6,5 +6,6 @@
         public const string ReceiveMessage = "ReceiveMessage";
         public const string GameStarted = "GameStarted";
         public const string JoinGame = "JoinGame";
+        public const string CreateNewGame = "CreateNewGame";
     }
 }

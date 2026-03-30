@@ -1,4 +1,5 @@
 ﻿using Memory_game_shared.Constants;
+using Memory_game_shared.Models;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Diagnostics;
 
@@ -8,6 +9,8 @@ namespace Memory_game.Model.Services.Impl
     {
 
         HubConnection? connection;
+        public event Action<string> OnGameStarted;
+        public event Action<GameState> OnGameStartedWithState;
 
         public async Task ConnectAsync(string serverAddress)
         {
@@ -18,10 +21,7 @@ namespace Memory_game.Model.Services.Impl
                 .WithUrl($"http://{serverAddress}/gamehub")
                 .Build();
 
-                connection.On<string>(HubMethods.ReceiveMessage, (message) =>
-                {
-                    Debug.WriteLine(message);
-                });
+                HandleServerEvents();
 
                 await connection.StartAsync();
 
@@ -31,6 +31,15 @@ namespace Memory_game.Model.Services.Impl
                 Debug.WriteLine(e.Message);
             }
 
+        }
+
+        private void HandleServerEvents()
+        {
+            connection.On<string>(HubMethods.GameStarted, (message) =>
+            {
+                Debug.WriteLine(message);
+                OnGameStarted?.Invoke(message);
+            });
         }
 
         public async Task JoinGameAsync()
@@ -51,6 +60,12 @@ namespace Memory_game.Model.Services.Impl
         {
             if(connection != null )
                 await connection.InvokeAsync(HubMethods.SendMessage, "Message from client");
+        }
+
+        public async Task CreateNewGame(GameSettings gameSettings)
+        {
+            if(connection != null)
+            await connection.InvokeAsync(HubMethods.CreateNewGame, gameSettings);
         }
     }
 }

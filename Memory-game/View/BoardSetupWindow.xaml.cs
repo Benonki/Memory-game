@@ -9,7 +9,7 @@ namespace Memory_game.View
         public BoardSetupWindow(INavigationService navigationService, ICardDeckService deckService)
         {
             InitializeComponent();
-            BoardSetupViewModel viewModel = new BoardSetupViewModel(navigationService, deckService);
+            BoardSetupViewModel viewModel = new BoardSetupViewModel(navigationService, deckService, App.SharedLobbyService);
             DataContext = viewModel;
             Owner = Application.Current.MainWindow;
         }

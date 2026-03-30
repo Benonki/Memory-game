@@ -1,6 +1,7 @@
 ﻿using Memory_game.Model.Services;
 using Memory_game.MVVM;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Memory_game.ViewModel
 {
@@ -46,6 +47,12 @@ namespace Memory_game.ViewModel
         {
             await _lobbyService.ConnectAsync(SelectedServer);
             await _lobbyService.JoinGameAsync();
+        }
+
+        public void CleanUp()
+        {
+            _serverListener.StopListening();
+            Debug.WriteLine("Closing udp");
         }
 
 

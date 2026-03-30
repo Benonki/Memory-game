@@ -1,6 +1,7 @@
 ﻿using Memory_game.Model.Services;
 using Memory_game.Model.Services.Impl;
 using Memory_game.ViewModel;
+using System.ComponentModel;
 using System.Windows;
 
 namespace Memory_game.View
@@ -11,9 +12,17 @@ namespace Memory_game.View
         public ServerListWindow()
         {
             InitializeComponent();
-            ServerListWindowViewModel viewModel = new ServerListWindowViewModel(new ServerListener(), new LobbyService());
+            ServerListWindowViewModel viewModel = new ServerListWindowViewModel(new ServerListener(), App.SharedLobbyService);
             DataContext = viewModel;
             Owner = Application.Current.MainWindow;
         }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (DataContext is ServerListWindowViewModel viewModel)
+                viewModel.CleanUp();
+            base.OnClosing(e);
+        }
+
     }
 }
