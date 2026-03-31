@@ -11,6 +11,8 @@ namespace Memory_game.Model.Services.Impl
         HubConnection? connection;
         public event Action<GameState> OnGameStarted;
         public event Action<int> OnCardFlipped;
+        public event Action<List<int>> OnMatchFound;
+        public event Action<List<int>> OnMatchFailed;
         public async Task ConnectAsync(string serverAddress)
         {
             Debug.WriteLine("Trying to connect");
@@ -43,6 +45,16 @@ namespace Memory_game.Model.Services.Impl
             connection.On<int>(HubMethods.FlipCard, (cardId) =>
             {
                 OnCardFlipped?.Invoke(cardId);
+            });
+
+            connection.On<List<int>>(HubMethods.MatchFound, (cardIds) =>
+            {
+                OnMatchFound?.Invoke(cardIds);
+            });
+
+            connection.On<List<int>>(HubMethods.MatchFailed, (cardIds) =>
+            {
+                OnMatchFailed?.Invoke(cardIds);
             });
         }
 

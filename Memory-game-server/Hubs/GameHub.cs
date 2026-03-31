@@ -54,12 +54,36 @@ namespace Memory_game_server.Hubs
         {
             Card cardToFlip = _gameState.CardsOnBoard.FirstOrDefault(card => card.id == cardId);
 
-            if (cardToFlip != null && !cardToFlip.isFaceUp)
-            {
-                cardToFlip.isFaceUp = true;
+            if (cardToFlip == null || cardToFlip.isFaceUp)
+                return;
 
-                await Clients.All.SendAsync(HubMethods.FlipCard, cardId);
+
+            cardToFlip.isFaceUp = true;
+            _currentlyFlippedCards.Add(cardId);
+            await Clients.All.SendAsync(HubMethods.FlipCard, cardId);
+
+            if(_currentlyFlippedCards.Count == 2)
+            {
+                Card firstCard = _gameState.CardsOnBoard.First(card => card.id == _currentlyFlippedCards[0]);
+                Card secondCard = _gameState.CardsOnBoard.First(card => card.id == _currentlyFlippedCards[1]);
+
+                if(firstCard.pairId == secondCard.pairId)
+                {
+                    firstCard.isMatched = true;
+                    secondCard.isMatched = true;
+
+                    await Clients.All.SendAsync(HubMethods.MatchFound, _currentlyFlippedCards);
+                }else
+                {
+                    await Task.Delay(1000);
+                    firstCard.isFaceUp = false;
+                    secondCard.isFaceUp = false;
+
+                    await Clients.All.SendAsync(HubMethods.MatchFailed, _currentlyFlippedCards);
+                }
+                _currentlyFlippedCards.Clear();
             }
+            
         }
 
         private void GenerateBoard(GameState gameState)

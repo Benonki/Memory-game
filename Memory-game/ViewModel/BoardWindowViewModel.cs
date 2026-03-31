@@ -22,7 +22,7 @@ namespace Memory_game.ViewModel
 
         public ObservableCollection<CardViewModel> Cards { get; set; } = new ObservableCollection<CardViewModel>();
 
-        public RelayCommand FlipCardCommand => new RelayCommand(execute => FlipCard((CardViewModel)execute), canExecute => true);
+        public RelayCommand FlipCardCommand => new RelayCommand(async execute => await FlipCard((CardViewModel)execute), canExecute => true);
 
         public int Rows
         {
@@ -76,6 +76,8 @@ namespace Memory_game.ViewModel
             _lobbyService = lobbyService;
 
             _lobbyService.OnCardFlipped += HandleCardFlipped;
+            _lobbyService.OnMatchFound += HandleCardsMatchFound;
+            _lobbyService.OnMatchFailed += HandleCardsMatchFailed;
 
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
@@ -113,6 +115,33 @@ namespace Memory_game.ViewModel
                 if (cardToFlip != null)
                 {
                     cardToFlip.IsFaceUp = true;
+                }
+            });
+        }
+
+        private void HandleCardsMatchFound(List<int> cardIds)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (int cardId in cardIds)
+                {
+                    CardViewModel? card = Cards.FirstOrDefault(card => card.Id == cardId);
+                    if(card != null)
+                        card.IsMatched = true;
+                }
+                Score++;
+            });
+        }
+
+        private void HandleCardsMatchFailed(List<int> cardIds)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (int cardId in cardIds)
+                {
+                    CardViewModel? card = Cards.FirstOrDefault(card => card.Id == cardId);
+                    if (card != null)
+                        card.IsFaceUp = false;
                 }
             });
         }
