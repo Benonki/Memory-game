@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.37111.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memory-game", "Memory-game\Memory-game.csproj", "{089C2781-CA96-1C2B-799B-4F51E0FFE940}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memory-game-server", "Memory-game-server\Memory-game-server.csproj", "{45694701-3C0E-9F9B-931E-62DAB63134FB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memory-game-shared", "Memory-game-shared\Memory-game-shared.csproj", "{96A42C93-D316-AE0C-16CB-B266481704E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memory-game", "Memory-game.csproj", "{083AFAC4-EE13-4068-8869-290250FB5778}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{089C2781-CA96-1C2B-799B-4F51E0FFE940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{089C2781-CA96-1C2B-799B-4F51E0FFE940}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{089C2781-CA96-1C2B-799B-4F51E0FFE940}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{089C2781-CA96-1C2B-799B-4F51E0FFE940}.Release|Any CPU.Build.0 = Release|Any CPU
-		{45694701-3C0E-9F9B-931E-62DAB63134FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45694701-3C0E-9F9B-931E-62DAB63134FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{45694701-3C0E-9F9B-931E-62DAB63134FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45694701-3C0E-9F9B-931E-62DAB63134FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{96A42C93-D316-AE0C-16CB-B266481704E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96A42C93-D316-AE0C-16CB-B266481704E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96A42C93-D316-AE0C-16CB-B266481704E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96A42C93-D316-AE0C-16CB-B266481704E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{083AFAC4-EE13-4068-8869-290250FB5778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{083AFAC4-EE13-4068-8869-290250FB5778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{083AFAC4-EE13-4068-8869-290250FB5778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{083AFAC4-EE13-4068-8869-290250FB5778}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

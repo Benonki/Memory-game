@@ -18,31 +18,95 @@
     <None Remove="Assets\Cards\6.png" />
     <None Remove="Assets\Cards\7.png" />
     <None Remove="Assets\Cards\8.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\1.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\2.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\3.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\4.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\5.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\6.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\7.png" />
+    <None Remove="Assets\Cards\DefaultDeck2\8.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\1.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\2.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\3.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\4.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\5.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\6.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\7.png" />
+    <None Remove="Assets\Cards\DefaultDeck3\8.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Cards\Default\1.png">
+    <Content Include="Assets\Cards\DefaultDeck1\1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Cards\Default\2.png">
+    <Content Include="Assets\Cards\DefaultDeck1\2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Cards\Default\3.png">
+    <Content Include="Assets\Cards\DefaultDeck1\3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Cards\Default\4.png">
+    <Content Include="Assets\Cards\DefaultDeck1\4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Cards\Default\5.png">
+    <Content Include="Assets\Cards\DefaultDeck1\5.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Cards\Default\6.png">
+    <Content Include="Assets\Cards\DefaultDeck1\6.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Cards\Default\7.png">
+    <Content Include="Assets\Cards\DefaultDeck1\7.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Cards\Default\8.png">
+    <Content Include="Assets\Cards\DefaultDeck1\8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck2\8.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Cards\DefaultDeck3\8.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -11,13 +11,12 @@ namespace Memory_game.ViewModel
 {
     public class CardDeckViewModel : ViewModelBase
     {
-        private readonly INavigationService _navigationService;
         private readonly ICardDeckService _deckService;
         private string _newDeckName = string.Empty;
         private string _selectedDeck = string.Empty;
         private string _errorMessage = string.Empty;
         private ObservableCollection<string> _availableDecks;
-        private INavigationService navigationService;
+        private INavigationService _navigationService;
 
         public RelayCommand CreateDeckCommand => new RelayCommand(execute => CreateDeck(), canExecute => true);
         public RelayCommand DeleteDeckCommand => new RelayCommand(execute => DeleteDeck(), canExecute => !string.IsNullOrEmpty(SelectedDeck));
@@ -35,7 +34,7 @@ namespace Memory_game.ViewModel
 
         public CardDeckViewModel(INavigationService navigationService)
         {
-            this.navigationService = navigationService;
+            this._navigationService = navigationService;
         }
 
         public ObservableCollection<string> AvailableDecks
@@ -107,7 +106,8 @@ namespace Memory_game.ViewModel
                 return;
             }
 
-            if(string.Equals(SelectedDeck, "Default")){
+            if (SelectedDeck.StartsWith("DefaultDeck"))
+            {
                 ErrorMessage = "Nie można usunąć domyślnej talii.";
                 return;
             }

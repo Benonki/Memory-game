@@ -10,7 +10,7 @@ namespace Memory_game.Model.Services.Impl
         public CardDeckServiceImpl()
         {
             _decksDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MemoryGame", "Decks");
-            _defaultDeckDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Cards", "Default");
+            _defaultDeckDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Cards");
 
             InitializeDecksDirectory();
         }
@@ -22,15 +22,29 @@ namespace Memory_game.Model.Services.Impl
                 Directory.CreateDirectory(_decksDirectory);
             }
 
-            string defaultDeckDirectory = Path.Combine(_decksDirectory, "Default");
-
-            if (!Directory.Exists(defaultDeckDirectory))
+            if (!Directory.Exists(_defaultDeckDirectory))
             {
-                Directory.CreateDirectory(defaultDeckDirectory);
-                
-                foreach (string file in Directory.GetFiles(_defaultDeckDirectory, "*.png"))
+                return;
+            }
+
+            foreach (string sourceDeckPath in Directory.GetDirectories(_defaultDeckDirectory, "DefaultDeck*"))
+            {
+                string deckName = Path.GetFileName(sourceDeckPath);
+                string targetDeckPath = Path.Combine(_decksDirectory, deckName);
+
+                if (!Directory.Exists(targetDeckPath))
                 {
-                    File.Copy(file, Path.Combine(defaultDeckDirectory, Path.GetFileName(file)));
+                    Directory.CreateDirectory(targetDeckPath);
+                }
+
+                foreach (string file in Directory.GetFiles(sourceDeckPath, "*.png"))
+                {
+                    string targetFilePath = Path.Combine(targetDeckPath, Path.GetFileName(file));
+
+                    if (!File.Exists(targetFilePath))
+                    {
+                        File.Copy(file, targetFilePath);
+                    }
                 }
             }
         }
