@@ -12,7 +12,9 @@ namespace Memory_game.ViewModel
     {
         private int _rows;
         private int _columns;
-        private int _score;
+        private int _myScore;
+        private int _opponentScore;
+        private string _currentTurnText;
         private CardViewModel? _firstSelectedCard;
         private CardViewModel? _secondSelectedCard;
         private bool _isProcessingMove;
@@ -44,15 +46,37 @@ namespace Memory_game.ViewModel
             }
         }
 
-        public int Score
+        public int MyScore
         {
-            get => _score;
+            get => _myScore;
             set
             {
-                _score = value;
+                _myScore = value;
                 OnPropertyChanged();
             }
         }
+
+        public int OpponentScore
+        {
+            get => _opponentScore;
+            set
+            {
+                _opponentScore = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string CurrentTurnText
+        {
+            get => _currentTurnText;
+            set
+            {
+                _currentTurnText = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
         public bool CanInteract
         {
@@ -68,7 +92,8 @@ namespace Memory_game.ViewModel
         {
             _rows = gameState.settings.Rows;
             _columns = gameState.settings.Columns;
-            _score = 0;
+            _myScore = 0;
+            _opponentScore = 0;
             _firstSelectedCard = null;
             _secondSelectedCard = null;
             CanInteract = true;
@@ -78,6 +103,7 @@ namespace Memory_game.ViewModel
             _lobbyService.OnCardFlipped += HandleCardFlipped;
             _lobbyService.OnMatchFound += HandleCardsMatchFound;
             _lobbyService.OnMatchFailed += HandleCardsMatchFailed;
+            _lobbyService.OnTurnChanged += HandleTurnChange;
 
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
@@ -93,20 +119,6 @@ namespace Memory_game.ViewModel
             }
         }
 
-        private void ShuffleCards()
-        {
-            Random rng = new Random();
-            int n = Cards.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                var value = Cards[k];
-                Cards[k] = Cards[n];
-                Cards[n] = value;
-            }
-        }
-
         private void HandleCardFlipped(int cardId)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -119,7 +131,7 @@ namespace Memory_game.ViewModel
             });
         }
 
-        private void HandleCardsMatchFound(List<int> cardIds)
+        private void HandleCardsMatchFound(List<int> cardIds, string currentPlayerId)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -129,7 +141,15 @@ namespace Memory_game.ViewModel
                     if(card != null)
                         card.IsMatched = true;
                 }
-                Score++;
+                
+                if(currentPlayerId == _lobbyService.MyConnectionId)
+                {
+                    MyScore++;
+                }
+                else
+                {
+                    OpponentScore++;
+                }
             });
         }
 
@@ -146,6 +166,23 @@ namespace Memory_game.ViewModel
             });
         }
 
+        private void HandleTurnChange(string currentPlayerId)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if(currentPlayerId == _lobbyService.MyConnectionId)
+                {
+                    CurrentTurnText = "Twoja tura";
+                    CanInteract = true;
+                }
+                else
+                {
+                    CurrentTurnText = "Tura przeciwnika";
+                    CanInteract = false;
+                }
+            });
+        }
+
         private async Task FlipCard(CardViewModel card)
         {
             if (card != null && !card.IsFaceUp && !card.IsMatched)
@@ -154,81 +191,5 @@ namespace Memory_game.ViewModel
             }
         }
 
-        //private void FlipCard(CardViewModel card)
-        //{
-        //    if (!CanInteract)
-        //        return;
-
-        //    if (card.IsMatched)
-        //        return;
-
-        //    if (card.IsFaceUp)
-        //        return;
-
-        //    if (_firstSelectedCard != null && _secondSelectedCard != null)
-        //    {
-        //        ResetSelectedCards();
-        //    }
-
-        //    if (_firstSelectedCard == null)
-        //    {
-        //        card.IsFaceUp = true;
-        //        _firstSelectedCard = card;
-        //    }
-        //    else if (_secondSelectedCard == null && _firstSelectedCard != card)
-        //    {
-        //        card.IsFaceUp = true;
-        //        _secondSelectedCard = card;
-        //        CheckMatch();
-        //    }
-        //}
-
-        private void CheckMatch()
-        {
-            if (_firstSelectedCard == null || _secondSelectedCard == null)
-                return;
-
-            if (_firstSelectedCard.PairId == _secondSelectedCard.PairId)
-            {
-                Score++;
-                _firstSelectedCard.IsMatched = true;
-                _secondSelectedCard.IsMatched = true;
-                ResetSelectedCards();
-            }
-            else
-            {
-                CanInteract = false;
-
-                _delayTimer = new DispatcherTimer
-                {
-                    Interval = TimeSpan.FromSeconds(1)
-                };
-
-                _delayTimer.Tick += (s, e) =>
-                {
-                    if (_firstSelectedCard != null && !_firstSelectedCard.IsMatched)
-                        _firstSelectedCard.IsFaceUp = false;
-                    if (_secondSelectedCard != null && !_secondSelectedCard.IsMatched)
-                        _secondSelectedCard.IsFaceUp = false;
-
-                    ResetSelectedCards();
-                    CanInteract = true;
-
-                    if (_delayTimer != null)
-                    {
-                        _delayTimer.Stop();
-                        _delayTimer = null;
-                    }
-                };
-
-                _delayTimer.Start();
-            }
-        }
-
-        private void ResetSelectedCards()
-        {
-            _firstSelectedCard = null;
-            _secondSelectedCard = null;
-        }
     }
 }

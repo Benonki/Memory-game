@@ -11,8 +11,11 @@ namespace Memory_game.Model.Services
     {
         public event Action<GameState> OnGameStarted;
         public event Action<int> OnCardFlipped;
-        public event Action<List<int>> OnMatchFound;
+        public event Action<List<int>, string> OnMatchFound;
         public event Action<List<int>> OnMatchFailed;
+        public event Action<string> OnTurnChanged;
+
+        public string MyConnectionId { get; }
         public Task SendFlipCardAsync(int cardId);
         public Task CreateNewGame(GameSettings gameSettings);
         public Task ConnectAsync(string serverAddress);

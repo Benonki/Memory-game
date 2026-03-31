@@ -12,6 +12,7 @@
         public const string FlipCard = "FlipCard";
         public const string MatchFound = "MatchFound";
         public const string MatchFailed = "MatchFailed";
+        public const string ChangeTurn = "ChangeTurn";
 
     }
 }

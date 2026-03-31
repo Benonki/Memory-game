@@ -11,6 +11,7 @@ namespace Memory_game_server.Hubs
 
         private static GameState _gameState = new GameState();
         private static List<string> _players = new List<string>();
+        private static string _currentPlayerTurn = "";
         private static List<int> _currentlyFlippedCards = new List<int>();
 
         public async Task SendMessage(string message)
@@ -41,17 +42,24 @@ namespace Memory_game_server.Hubs
             if(_players.Count == 2)
             {
 
-                // Creating game and starting it
+                _currentPlayerTurn = _players[0];
 
                 GenerateBoard(_gameState);
+                
                 await Clients.All.SendAsync(HubMethods.GameStarted, _gameState);
-                //await Clients.All.SendAsync(HubMethods.GameStarted, _gameState);
+
+                await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn);
             }
 
         }
 
         public async Task FlipCard(int cardId)
         {
+
+            if (Context.ConnectionId != _currentPlayerTurn)
+                return;
+
+
             Card cardToFlip = _gameState.CardsOnBoard.FirstOrDefault(card => card.id == cardId);
 
             if (cardToFlip == null || cardToFlip.isFaceUp)
@@ -72,14 +80,18 @@ namespace Memory_game_server.Hubs
                     firstCard.isMatched = true;
                     secondCard.isMatched = true;
 
-                    await Clients.All.SendAsync(HubMethods.MatchFound, _currentlyFlippedCards);
+                    await Clients.All.SendAsync(HubMethods.MatchFound, _currentlyFlippedCards, _currentPlayerTurn);
                 }else
                 {
                     await Task.Delay(1000);
                     firstCard.isFaceUp = false;
                     secondCard.isFaceUp = false;
 
+                    _currentPlayerTurn = _players.First(player => player != _currentPlayerTurn);
+
                     await Clients.All.SendAsync(HubMethods.MatchFailed, _currentlyFlippedCards);
+
+                    await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn);
                 }
                 _currentlyFlippedCards.Clear();
             }
