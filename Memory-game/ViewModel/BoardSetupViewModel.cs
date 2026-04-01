@@ -13,7 +13,7 @@ namespace Memory_game.ViewModel
         private string _columns = "4";
         private string _errorMessage = string.Empty;
         private readonly ICardDeckService _deckService;
-        private string _selectedDeck = "Default"; 
+        private string _selectedDeck = "DefaultDeck1"; 
         private readonly ILobbyService _lobbyService;
 
         public BoardSetupViewModel(INavigationService navigationService, ICardDeckService deckService, ILobbyService lobbyService)
@@ -101,7 +101,8 @@ namespace Memory_game.ViewModel
                 {
                     Rows = rows,
                     Columns = columns,
-                    ImagePaths = _deckService.GetCardsFromDeck(SelectedDeck) // Change to get it dynamically 
+                    ImagePaths = _deckService.GetCardsFromDeck(SelectedDeck),
+                    DeckName = SelectedDeck
                 };
 
                 try
@@ -134,7 +135,6 @@ namespace Memory_game.ViewModel
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                _navigationService.SelectedDeck = SelectedDeck;
                 _navigationService.OpenBoard(gameState, SelectedDeck);
             });
         }

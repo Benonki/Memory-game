@@ -8,7 +8,7 @@ namespace Memory_game.Model.Services.Impl
     public class NavigationServiceImpl : INavigationService
     {
         private readonly ICardDeckService _deckService = new CardDeckServiceImpl();
-        public string SelectedDeck { get; set; } = "Default";
+        public string SelectedDeck { get; set; } = "DefaultDeck1";
         public void OpenBoardSetup()
         {
             BoardSetupWindow setupWindow = new BoardSetupWindow(this, _deckService);
@@ -17,7 +17,7 @@ namespace Memory_game.Model.Services.Impl
 
         public void OpenBoard(GameState gameState, string deckName)
         {
-            BoardWindow boardWindow = new BoardWindow(gameState, deckName, _deckService);
+            BoardWindow boardWindow = new BoardWindow(gameState, gameState.settings.DeckName, _deckService);
             boardWindow.Show();
 
             foreach (Window window in Application.Current.Windows)

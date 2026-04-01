@@ -3,9 +3,7 @@ using Memory_game.MVVM;
 using Memory_game.View;
 using Memory_game_shared.Models;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace Memory_game.ViewModel
 {
@@ -16,11 +14,7 @@ namespace Memory_game.ViewModel
         private int _myScore;
         private int _opponentScore;
         private string _currentTurnText;
-        private string _gameResultMessage = string.Empty;
-        private CardViewModel? _firstSelectedCard;
-        private CardViewModel? _secondSelectedCard;
         private bool _isProcessingMove;
-        private DispatcherTimer? _delayTimer;
         private readonly ICardDeckService _deckService;
         private readonly ILobbyService _lobbyService;
 
@@ -96,8 +90,6 @@ namespace Memory_game.ViewModel
             _columns = gameState.settings.Columns;
             _myScore = 0;
             _opponentScore = 0;
-            _firstSelectedCard = null;
-            _secondSelectedCard = null;
             CanInteract = true;
             _deckService = deckService;
             _lobbyService = lobbyService;
@@ -111,14 +103,24 @@ namespace Memory_game.ViewModel
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
 
-        private void InitializeCards(List<Card> cardsFromServer,string deckName)
+        private void InitializeCards(List<Card> cardsFromServer, string deckName)
         {
-            int totalCards = Rows * Columns;
             string[] imageFiles = _deckService.GetCardsFromDeck(deckName);
 
-            foreach(Card card in cardsFromServer)
+            var imagePathsByPairId = new Dictionary<int, string>();
+            for (int i = 0; i < imageFiles.Length; i++)
             {
-                Cards.Add(new CardViewModel(card.id, card.pairId, card.imagePath));
+                if (i < imageFiles.Length)
+                {
+                    imagePathsByPairId[i] = imageFiles[i];
+                }
+            }
+
+            foreach (Card card in cardsFromServer)
+            {
+                string imagePath = imagePathsByPairId.ContainsKey(card.pairId) ? imagePathsByPairId[card.pairId] : string.Empty;
+
+                Cards.Add(new CardViewModel(card.id, card.pairId, imagePath));
             }
         }
 

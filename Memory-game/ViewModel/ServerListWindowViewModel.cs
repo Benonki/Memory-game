@@ -59,7 +59,7 @@ namespace Memory_game.ViewModel
             _lobbyService.OnGameStarted -= HandleGameStarter;
             Application.Current.Dispatcher.Invoke(() =>
             {
-                _navigationService.OpenBoard(gameState, "Default");
+                _navigationService.OpenBoard(gameState, gameState.settings.DeckName);
             });
         }
 
