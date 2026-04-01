@@ -7,6 +7,7 @@
         public const string GameStarted = "GameStarted";
         public const string JoinGame = "JoinGame";
         public const string CreateNewGame = "CreateNewGame";
+        public const string GameOver = "GameOver";
 
         // Game actions
         public const string FlipCard = "FlipCard";

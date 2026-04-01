@@ -14,6 +14,7 @@ namespace Memory_game.Model.Services
         public event Action<List<int>, string> OnMatchFound;
         public event Action<List<int>> OnMatchFailed;
         public event Action<string> OnTurnChanged;
+        public event Action<string> OnGameOver;
 
         public string MyConnectionId { get; }
         public Task SendFlipCardAsync(int cardId);

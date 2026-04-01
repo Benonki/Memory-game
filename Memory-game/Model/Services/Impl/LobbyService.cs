@@ -14,6 +14,7 @@ namespace Memory_game.Model.Services.Impl
         public event Action<List<int>, string> OnMatchFound;
         public event Action<List<int>> OnMatchFailed;
         public event Action<string> OnTurnChanged;
+        public event Action<string> OnGameOver;
 
         public string MyConnectionId => connection?.ConnectionId ?? "";
 
@@ -64,6 +65,11 @@ namespace Memory_game.Model.Services.Impl
             connection.On<string>(HubMethods.ChangeTurn, (currentPlayerId) =>
             {
                 OnTurnChanged?.Invoke(currentPlayerId);
+            });
+
+            connection.On<string>(HubMethods.GameOver, (result) =>
+            {
+                OnGameOver?.Invoke(result);
             });
         }
 

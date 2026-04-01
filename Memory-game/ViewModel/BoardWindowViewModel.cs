@@ -1,5 +1,6 @@
 ﻿using Memory_game.Model.Services;
 using Memory_game.MVVM;
+using Memory_game.View;
 using Memory_game_shared.Models;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,6 +16,7 @@ namespace Memory_game.ViewModel
         private int _myScore;
         private int _opponentScore;
         private string _currentTurnText;
+        private string _gameResultMessage = string.Empty;
         private CardViewModel? _firstSelectedCard;
         private CardViewModel? _secondSelectedCard;
         private bool _isProcessingMove;
@@ -104,6 +106,7 @@ namespace Memory_game.ViewModel
             _lobbyService.OnMatchFound += HandleCardsMatchFound;
             _lobbyService.OnMatchFailed += HandleCardsMatchFailed;
             _lobbyService.OnTurnChanged += HandleTurnChange;
+            _lobbyService.OnGameOver += HandleGameOver;
 
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
@@ -179,6 +182,50 @@ namespace Memory_game.ViewModel
                 {
                     CurrentTurnText = "Tura przeciwnika";
                     CanInteract = false;
+                }
+            });
+        }
+
+        private void HandleGameOver(string result)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                string message;
+                switch (result)
+                {
+                    case "win":
+                        message = "Gratulacje! Wygrałeś!";
+                        break;
+                    case "loss":
+                        message = "Niestety, przegrałeś. Spróbuj ponownie!";
+                        break;
+                    case "draw":
+                        message = "Remis!";
+                        break;
+                    default:
+                        message = "Koniec gry!";
+                        break;
+                }
+
+                MessageBoxResult mbResult = MessageBox.Show(
+                    message + "\n\nKliknij OK, aby zamknąć grę.",
+                    "Koniec gry",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                if (mbResult == MessageBoxResult.OK)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        foreach (Window window in Application.Current.Windows)
+                        {
+                            if (window is BoardWindow)
+                            {
+                                window.Close();
+                                break;
+                            }
+                        }
+                    });
                 }
             });
         }

@@ -79,6 +79,8 @@ namespace Memory_game_server.Hubs
                 {
                     firstCard.isMatched = true;
                     secondCard.isMatched = true;
+                    _gameState.Scores[_currentPlayerTurn] = _gameState.Scores.GetValueOrDefault(_currentPlayerTurn, 0) + 1;
+                    await CheckGameOver();
 
                     await Clients.All.SendAsync(HubMethods.MatchFound, _currentlyFlippedCards, _currentPlayerTurn);
                 }else
@@ -138,6 +140,30 @@ namespace Memory_game_server.Hubs
                 var value = cardsToShuffle[k];
                 cardsToShuffle[k] = cardsToShuffle[n];
                 cardsToShuffle[n] = value;
+            }
+        }
+
+        private async Task CheckGameOver()
+        {
+            bool allMatched = _gameState.CardsOnBoard.All(card => card.isMatched);
+
+            if (allMatched)
+            {
+                int player1Score = _gameState.Scores.GetValueOrDefault(_players[0], 0);
+                int player2Score = _gameState.Scores.GetValueOrDefault(_players[1], 0);
+
+                string result;
+                if (player1Score > player2Score)
+                    result = "win";
+                else if (player2Score > player1Score)
+                    result = "loss";
+                else
+                    result = "draw";
+
+                await Clients.Client(_players[0]).SendAsync(HubMethods.GameOver,
+                    player1Score > player2Score ? "win" : (player1Score == player2Score ? "draw" : "loss"));
+                await Clients.Client(_players[1]).SendAsync(HubMethods.GameOver,
+                    player2Score > player1Score ? "win" : (player1Score == player2Score ? "draw" : "loss"));
             }
         }
 
