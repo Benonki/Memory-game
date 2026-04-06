@@ -1,0 +1,13 @@
+# Memory game
+
+A C# game in which we play the classic memory game known from childhood, you can play with another person, with real-time multiplayer functionality powered by SignalR.
+
+## ⚙️ Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Benonki/Memory-game.git
+   ```
+## 🚀 Running the App
+1. Open project in VS (2022 for example)
+2. Start the Server
+3. Start the Game
