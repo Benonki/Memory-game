@@ -12,7 +12,8 @@ namespace Memory_game.ViewModel
         private string _rows = "4";
         private string _columns = "4";
         private string _errorMessage = string.Empty;
-        private string _selectedDeck = "DefaultDeck1"; 
+        private string _selectedDeck = "DefaultDeck1";
+        private bool _isServerStarting;
 
         private readonly ILobbyService _lobbyService;
         private readonly ICardDeckService _deckService;
@@ -36,6 +37,8 @@ namespace Memory_game.ViewModel
             _selectedDeck = _navigationService.SelectedDeck;
 
             _lobbyService.OnGameStarted += HandleGameStarted;
+
+            CanInteract = true;
 
         }
 
@@ -79,6 +82,17 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public bool CanInteract
+        {
+            get => !_isServerStarting;
+            set
+            {
+                _isServerStarting = !value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public RelayCommand StartCommand => new RelayCommand(async execute => await Start(), canExecute => true);
 
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
@@ -120,6 +134,7 @@ namespace Memory_game.ViewModel
                 try
                 {
                     ErrorMessage = "Uruchamianie serwera";
+                    CanInteract = false;
 
                     await _serverManager.StartServerAsync(5000);
 
@@ -138,6 +153,8 @@ namespace Memory_game.ViewModel
 
                     await _serverManager.StopServerAsync();
                     _broadcastService.StopBroadcasting();
+
+                    CanInteract = true;
                 }
 
                 
@@ -155,6 +172,8 @@ namespace Memory_game.ViewModel
             _broadcastService.StopBroadcasting();
 
             await _lobbyService.DisconnectAsync();
+
+            CanInteract = true;
 
             _navigationService.OpenMainWindow();
         }
