@@ -167,6 +167,15 @@ namespace Memory_game_server.Hubs
             }
         }
 
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            _players.Remove(Context.ConnectionId);
+
+            await Clients.All.SendAsync(HubMethods.PlayerDisconnected);
+
+            await base.OnDisconnectedAsync(exception);
+        }
+
 
     }
 }

@@ -186,7 +186,7 @@ namespace Memory_game.ViewModel
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                _navigationService.OpenBoard(gameState, SelectedDeck);
+                _navigationService.OpenBoard(gameState, SelectedDeck, _serverManager);
             });
         }
     }

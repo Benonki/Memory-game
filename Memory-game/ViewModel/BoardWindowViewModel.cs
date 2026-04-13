@@ -15,8 +15,10 @@ namespace Memory_game.ViewModel
         private int _opponentScore;
         private string _currentTurnText;
         private bool _isProcessingMove;
+
         private readonly ICardDeckService _deckService;
         private readonly ILobbyService _lobbyService;
+        private readonly IServerManager _serverManager;
 
         public ObservableCollection<CardViewModel> Cards { get; set; } = new ObservableCollection<CardViewModel>();
 
@@ -84,21 +86,27 @@ namespace Memory_game.ViewModel
             }
         }
 
-        public BoardWindowViewModel(GameState gameState, string deckName, ICardDeckService deckService, ILobbyService lobbyService)
+        public BoardWindowViewModel(GameState gameState, string deckName,
+            ICardDeckService deckService,
+            ILobbyService lobbyService,
+            IServerManager serverManager)
         {
             _rows = gameState.settings.Rows;
             _columns = gameState.settings.Columns;
             _myScore = 0;
             _opponentScore = 0;
             CanInteract = true;
+
             _deckService = deckService;
             _lobbyService = lobbyService;
+            _serverManager = serverManager;
 
             _lobbyService.OnCardFlipped += HandleCardFlipped;
             _lobbyService.OnMatchFound += HandleCardsMatchFound;
             _lobbyService.OnMatchFailed += HandleCardsMatchFailed;
             _lobbyService.OnTurnChanged += HandleTurnChange;
             _lobbyService.OnGameOver += HandleGameOver;
+            _lobbyService.OnPlayerDisconnected += HandlePlayerDisconnected;
 
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
@@ -238,6 +246,34 @@ namespace Memory_game.ViewModel
             {
                 await _lobbyService.SendFlipCardAsync(card.Id);
             }
+        }
+
+        private async void HandlePlayerDisconnected()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                MessageBox.Show("Drugi gracz rozłączył się");
+                
+                foreach(Window window in Application.Current.Windows)
+                {
+                    if (window is BoardWindow boardWindow)
+                    {
+                        boardWindow.Close();
+                        break;
+                    }
+                }
+              
+            });
+
+            if(_serverManager != null)
+                await _serverManager.StopServerAsync();
+        }
+
+        public async Task Cleanup()
+        {
+            if(_serverManager != null)
+            await _serverManager.StopServerAsync();
+            await _lobbyService.DisconnectAsync();
         }
 
     }

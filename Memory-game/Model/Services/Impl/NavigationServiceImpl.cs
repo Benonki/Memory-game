@@ -15,9 +15,9 @@ namespace Memory_game.Model.Services.Impl
             setupWindow.ShowDialog();
         }
 
-        public void OpenBoard(GameState gameState, string deckName)
+        public void OpenBoard(GameState gameState, string deckName, IServerManager? serverManager = null)
         {
-            BoardWindow boardWindow = new BoardWindow(gameState, gameState.settings.DeckName, _deckService);
+            BoardWindow boardWindow = new BoardWindow(gameState, gameState.settings.DeckName, _deckService, serverManager);
             boardWindow.Show();
 
             foreach (Window window in Application.Current.Windows)

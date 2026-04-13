@@ -15,6 +15,7 @@ namespace Memory_game.Model.Services.Impl
         public event Action<List<int>> OnMatchFailed;
         public event Action<string> OnTurnChanged;
         public event Action<string> OnGameOver;
+        public event Action OnPlayerDisconnected;
 
         public string MyConnectionId => connection?.ConnectionId ?? "";
 
@@ -31,7 +32,7 @@ namespace Memory_game.Model.Services.Impl
 
                 await connection.StartAsync();
 
-                Debug.WriteLine(connection.State);
+                Debug.WriteLine($"Connection status: {connection.State}");
             }catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
@@ -70,6 +71,11 @@ namespace Memory_game.Model.Services.Impl
             connection.On<string>(HubMethods.GameOver, (result) =>
             {
                 OnGameOver?.Invoke(result);
+            });
+
+            connection.On(HubMethods.PlayerDisconnected, () =>
+            {
+                OnPlayerDisconnected?.Invoke();
             });
         }
 
