@@ -138,12 +138,12 @@ namespace Memory_game.ViewModel
 
                     await _serverManager.StartServerAsync(5000);
 
-                    _ = _broadcastService.StartBroadcastingAsync(5000);
-
                     ErrorMessage = "Łączenie z serwerem";
 
                     await _lobbyService.ConnectAsync("localhost:5000");
                     await _lobbyService.CreateNewGame(gameSettings);
+
+                    _ = _broadcastService.StartBroadcastingAsync(5000);
 
                     ErrorMessage = "Czekanie na drugiego gracza";
                 }catch (Exception e)
