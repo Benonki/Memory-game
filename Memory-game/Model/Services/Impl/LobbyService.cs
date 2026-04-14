@@ -77,6 +77,12 @@ namespace Memory_game.Model.Services.Impl
             {
                 OnPlayerDisconnected?.Invoke();
             });
+
+            connection.Closed += async (error) =>
+            {
+                OnPlayerDisconnected?.Invoke();
+                await Task.CompletedTask;
+            };
         }
 
         public async Task JoinGameAsync()

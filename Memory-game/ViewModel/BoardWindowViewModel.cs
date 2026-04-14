@@ -265,14 +265,24 @@ namespace Memory_game.ViewModel
               
             });
 
-            if(_serverManager != null)
-                await _serverManager.StopServerAsync();
+           
         }
 
         public async Task Cleanup()
         {
-            if(_serverManager != null)
-            await _serverManager.StopServerAsync();
+            _lobbyService.OnCardFlipped -= HandleCardFlipped;
+            _lobbyService.OnMatchFound -= HandleCardsMatchFound;
+            _lobbyService.OnMatchFailed -= HandleCardsMatchFailed;
+            _lobbyService.OnTurnChanged -= HandleTurnChange;
+            _lobbyService.OnGameOver -= HandleGameOver;
+            _lobbyService.OnPlayerDisconnected -= HandlePlayerDisconnected;
+
+
+            if (_serverManager != null)
+            {
+                await _serverManager.StopServerAsync();
+            }
+            
             await _lobbyService.DisconnectAsync();
         }
 
