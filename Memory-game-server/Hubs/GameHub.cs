@@ -48,7 +48,8 @@ namespace Memory_game_server.Hubs
                 
                 await Clients.All.SendAsync(HubMethods.GameStarted, _gameState);
 
-                await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn);
+                int turnTimeSeconds = _gameState.settings.TurnTimeSeconds;
+                await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn, turnTimeSeconds);
             }
 
         }
@@ -93,7 +94,8 @@ namespace Memory_game_server.Hubs
 
                     await Clients.All.SendAsync(HubMethods.MatchFailed, _currentlyFlippedCards);
 
-                    await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn);
+                    int turnTimeSeconds = _gameState.settings.TurnTimeSeconds;
+                    await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn, turnTimeSeconds);
                 }
                 _currentlyFlippedCards.Clear();
             }
@@ -167,6 +169,28 @@ namespace Memory_game_server.Hubs
             }
         }
 
+        public async Task TurnTimeout()
+        {
+            if (Context.ConnectionId != _currentPlayerTurn)
+                return;
+
+            if (_currentlyFlippedCards.Count > 0)
+            {
+                foreach (int cardId in _currentlyFlippedCards)
+                {
+                    Card card = _gameState.CardsOnBoard.First(c => c.id == cardId);
+                    card.isFaceUp = false;
+                }
+
+                await Clients.All.SendAsync(HubMethods.MatchFailed, _currentlyFlippedCards);
+                _currentlyFlippedCards.Clear();
+            }
+
+            _currentPlayerTurn = _players.First(player => player != _currentPlayerTurn);
+
+            int turnTimeSeconds = _gameState.settings.TurnTimeSeconds;
+            await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn, turnTimeSeconds);
+        }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             _players.Remove(Context.ConnectionId);

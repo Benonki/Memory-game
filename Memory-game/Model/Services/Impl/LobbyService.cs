@@ -13,7 +13,7 @@ namespace Memory_game.Model.Services.Impl
         public event Action<int> OnCardFlipped;
         public event Action<List<int>, string> OnMatchFound;
         public event Action<List<int>> OnMatchFailed;
-        public event Action<string> OnTurnChanged;
+        public event Action<string, int> OnTurnChanged;
         public event Action<string> OnGameOver;
         public event Action OnPlayerDisconnected;
 
@@ -63,9 +63,9 @@ namespace Memory_game.Model.Services.Impl
                 OnMatchFailed?.Invoke(cardIds);
             });
 
-            connection.On<string>(HubMethods.ChangeTurn, (currentPlayerId) =>
+            connection.On<string, int>(HubMethods.ChangeTurn, (currentPlayerId, turnTimeSeconds) =>
             {
-                OnTurnChanged?.Invoke(currentPlayerId);
+                OnTurnChanged?.Invoke(currentPlayerId, turnTimeSeconds);
             });
 
             connection.On<string>(HubMethods.GameOver, (result) =>
@@ -115,6 +115,12 @@ namespace Memory_game.Model.Services.Impl
         {
             if(connection != null)
                 await connection.InvokeAsync(HubMethods.FlipCard, cardId);
+        }
+
+        public async Task SendTurnTimeoutAsync()
+        {
+            if (connection != null)
+                await connection.InvokeAsync(HubMethods.TurnTimeout);
         }
     }
 }
