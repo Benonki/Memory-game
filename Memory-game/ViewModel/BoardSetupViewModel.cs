@@ -200,14 +200,13 @@ namespace Memory_game.ViewModel
 
         private async Task Cancel()
         {
+            _lobbyService.OnGameStarted -= HandleGameStarted;
             await _serverManager.StopServerAsync();
             _broadcastService.StopBroadcasting();
 
             await _lobbyService.DisconnectAsync();
 
             CanInteract = true;
-
-            _lobbyService.OnGameStarted -= HandleGameStarted;
 
             _navigationService.OpenMainWindow();
         }
@@ -222,6 +221,11 @@ namespace Memory_game.ViewModel
             {
                 _navigationService.OpenBoard(gameState, SelectedDeck, _serverManager);
             });
+        }
+
+        public async Task CleanUp()
+        {
+            _lobbyService.OnGameStarted -= HandleGameStarted;
         }
     }
 }
