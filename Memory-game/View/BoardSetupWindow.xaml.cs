@@ -3,6 +3,7 @@ using Memory_game.Model.Services;
 using System.Windows;
 using Memory_game_server.Services.Impl;
 using Memory_game.Model.Services.Impl;
+using System.ComponentModel;
 
 namespace Memory_game.View
 {
@@ -23,5 +24,16 @@ namespace Memory_game.View
             DataContext = viewModel;
             Owner = Application.Current.MainWindow;
         }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if(DataContext is BoardSetupViewModel viewModel)
+            {
+                viewModel.CleanUp();
+            }
+
+            base.OnClosing(e);
+        }
+
     }
 }

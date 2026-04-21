@@ -16,6 +16,6 @@
         public const string MatchFound = "MatchFound";
         public const string MatchFailed = "MatchFailed";
         public const string ChangeTurn = "ChangeTurn";
-
+        public const string TurnTimeout = "TurnTimeout";
     }
 }

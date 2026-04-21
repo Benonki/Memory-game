@@ -4,6 +4,7 @@ using Memory_game.View;
 using Memory_game_shared.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Memory_game.ViewModel
 {
@@ -15,6 +16,9 @@ namespace Memory_game.ViewModel
         private int _opponentScore;
         private string _currentTurnText;
         private bool _isProcessingMove;
+        private double _timeLeft;
+        private int _turnTimeSeconds = 5;
+        private DispatcherTimer? _turnTimer;
 
         private readonly ICardDeckService _deckService;
         private readonly ILobbyService _lobbyService;
@@ -74,7 +78,25 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public double TimeLeft
+        {
+            get => _timeLeft;
+            set
+            {
+                _timeLeft = value;
+                OnPropertyChanged();
+            }
+        }
 
+        public int TurnTimeSeconds
+        {
+            get => _turnTimeSeconds;
+            set
+            {
+                _turnTimeSeconds = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool CanInteract
         {
@@ -96,6 +118,8 @@ namespace Memory_game.ViewModel
             _myScore = 0;
             _opponentScore = 0;
             CanInteract = true;
+            _turnTimeSeconds = gameState.settings.TurnTimeSeconds;
+            TimeLeft = _turnTimeSeconds;
 
             _deckService = deckService;
             _lobbyService = lobbyService;
@@ -151,13 +175,14 @@ namespace Memory_game.ViewModel
                 foreach (int cardId in cardIds)
                 {
                     CardViewModel? card = Cards.FirstOrDefault(card => card.Id == cardId);
-                    if(card != null)
+                    if (card != null)
                         card.IsMatched = true;
                 }
-                
-                if(currentPlayerId == _lobbyService.MyConnectionId)
+
+                if (currentPlayerId == _lobbyService.MyConnectionId)
                 {
                     MyScore++;
+                    ResetTimer();
                 }
                 else
                 {
@@ -179,14 +204,20 @@ namespace Memory_game.ViewModel
             });
         }
 
-        private void HandleTurnChange(string currentPlayerId)
+        private void HandleTurnChange(string currentPlayerId, int turnTimeSeconds)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if(currentPlayerId == _lobbyService.MyConnectionId)
+                StopTimer();
+
+                TurnTimeSeconds = turnTimeSeconds;
+                TimeLeft = TurnTimeSeconds;
+
+                if (currentPlayerId == _lobbyService.MyConnectionId)
                 {
                     CurrentTurnText = "Twoja tura";
                     CanInteract = true;
+                    StartTimer();
                 }
                 else
                 {
@@ -194,6 +225,60 @@ namespace Memory_game.ViewModel
                     CanInteract = false;
                 }
             });
+        }
+
+        private void StartTimer()
+        {
+            TimeLeft = TurnTimeSeconds;
+            _turnTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(0.1)
+            };
+            _turnTimer.Tick += OnTimerTick;
+            _turnTimer.Start();
+        }
+
+        private void StopTimer()
+        {
+            _turnTimer?.Stop();
+            _turnTimer = null;
+        }
+
+        private void ResetTimer()
+        {
+            StopTimer();
+            TimeLeft = TurnTimeSeconds;
+            StartTimer();
+        }
+
+        private void OnTimerTick(object? sender, EventArgs e)
+        {
+            if (Application.Current == null)
+            {
+                StopTimer();
+                return;
+            }
+
+            TimeLeft -= 0.1;
+            if (TimeLeft <= 0)
+            {
+                StopTimer();
+                OnTurnTimeout();
+            }
+        }
+
+        private async void OnTurnTimeout()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                CanInteract = false;
+                CurrentTurnText = "Czas minął!";
+                foreach (var card in Cards.Where(c => c.IsFaceUp && !c.IsMatched))
+                {
+                    card.IsFaceUp = false;
+                }
+            });
+            await _lobbyService.SendTurnTimeoutAsync();
         }
 
         private void HandleGameOver(string result)
@@ -252,6 +337,7 @@ namespace Memory_game.ViewModel
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
+                StopTimer();
                 MessageBox.Show("Drugi gracz rozłączył się");
                 
                 foreach(Window window in Application.Current.Windows)
@@ -270,6 +356,7 @@ namespace Memory_game.ViewModel
 
         public async Task Cleanup()
         {
+            StopTimer();
             _lobbyService.OnCardFlipped -= HandleCardFlipped;
             _lobbyService.OnMatchFound -= HandleCardsMatchFound;
             _lobbyService.OnMatchFailed -= HandleCardsMatchFailed;
@@ -277,13 +364,13 @@ namespace Memory_game.ViewModel
             _lobbyService.OnGameOver -= HandleGameOver;
             _lobbyService.OnPlayerDisconnected -= HandlePlayerDisconnected;
 
+            await _lobbyService.DisconnectAsync();
 
             if (_serverManager != null)
             {
                 await _serverManager.StopServerAsync();
             }
-            
-            await _lobbyService.DisconnectAsync();
+  
         }
 
     }

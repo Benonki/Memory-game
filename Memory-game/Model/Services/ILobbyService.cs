@@ -13,7 +13,7 @@ namespace Memory_game.Model.Services
         public event Action<int> OnCardFlipped;
         public event Action<List<int>, string> OnMatchFound;
         public event Action<List<int>> OnMatchFailed;
-        public event Action<string> OnTurnChanged;
+        public event Action<string, int> OnTurnChanged;
         public event Action<string> OnGameOver;
         public event Action OnPlayerDisconnected;
 
@@ -24,6 +24,7 @@ namespace Memory_game.Model.Services
         public Task JoinGameAsync();
         public Task SendMessageAsync();
         public Task DisconnectAsync();
+        public Task SendTurnTimeoutAsync();
 
     }
 }

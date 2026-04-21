@@ -11,8 +11,10 @@ namespace Memory_game.ViewModel
     {
         private string _rows = "4";
         private string _columns = "4";
+        private string _turnTime = "5";
         private string _errorMessage = string.Empty;
         private string _selectedDeck = "DefaultDeck1";
+        private string _lobbyName = string.Empty;
         private bool _isServerStarting;
 
         private readonly ILobbyService _lobbyService;
@@ -38,11 +40,11 @@ namespace Memory_game.ViewModel
             _deckPackageService = deckPackageService;
 
             _selectedDeck = _navigationService.SelectedDeck;
+            _lobbyName = $"Gra {_selectedDeck}"; // Domyślna nazwa
 
             _lobbyService.OnGameStarted += HandleGameStarted;
 
             CanInteract = true;
-
         }
 
         public string Rows
@@ -85,6 +87,16 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public string LobbyName
+        {
+            get => _lobbyName;
+            set
+            {
+                _lobbyName = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool CanInteract
         {
             get => !_isServerStarting;
@@ -95,9 +107,17 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public string TurnTime
+        {
+            get => _turnTime;
+            set
+            {
+                _turnTime = value;
+                OnPropertyChanged();
+            }
+        }
 
         public RelayCommand StartCommand => new RelayCommand(async execute => await Start(), canExecute => true);
-
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
 
         private async Task Start()
@@ -134,15 +154,19 @@ namespace Memory_game.ViewModel
                     return;
                 }
 
+                if (!int.TryParse(TurnTime, out int turnTimeSeconds) || turnTimeSeconds < 3 || turnTimeSeconds > 60)
+                {
+                    ErrorMessage = "Czas na ruch musi być liczbą całkowitą w zakresie 3-60 sekund";
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(LobbyName))
+                {
+                    ErrorMessage = "Nazwa lobby nie może być pusta";
+                    return;
+                }
+
                 ErrorMessage = "Łączenie z serwerem";
-
-                string lobbyName = Microsoft.VisualBasic.Interaction.InputBox(
-            "Podaj nazwę swojego lobby:",
-            "Nazwa lobby",
-            $"Gra {SelectedDeck}");
-
-                if (string.IsNullOrWhiteSpace(lobbyName))
-                    lobbyName = $"Gra {SelectedDeck}";
 
                 GameSettings gameSettings = new GameSettings
                 {
@@ -151,7 +175,8 @@ namespace Memory_game.ViewModel
                     ImagePaths = selectedDeckCards,
                     DeckName = SelectedDeck,
                     DeckZipData = deckZipBytes,
-                    LobbyName = lobbyName
+                    LobbyName = LobbyName.Trim(),
+                    TurnTimeSeconds = turnTimeSeconds
                 };
 
                 try
@@ -165,11 +190,12 @@ namespace Memory_game.ViewModel
 
                     await _lobbyService.ConnectAsync("localhost:5000");
                     await _lobbyService.CreateNewGame(gameSettings);
-                    _broadcastService.SetLobbyName(lobbyName);
+                    _broadcastService.SetLobbyName(gameSettings.LobbyName);
                     _ = _broadcastService.StartBroadcastingAsync(5000);
 
                     ErrorMessage = "Czekanie na drugiego gracza";
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Debug.WriteLine(e.Message);
                     ErrorMessage = "Nie udało się uruchomić serwera";
@@ -179,8 +205,6 @@ namespace Memory_game.ViewModel
 
                     CanInteract = true;
                 }
-
-                
             }
             else
             {
@@ -190,7 +214,7 @@ namespace Memory_game.ViewModel
 
         private async Task Cancel()
         {
-
+            _lobbyService.OnGameStarted -= HandleGameStarted;
             await _serverManager.StopServerAsync();
             _broadcastService.StopBroadcasting();
 
@@ -211,6 +235,11 @@ namespace Memory_game.ViewModel
             {
                 _navigationService.OpenBoard(gameState, SelectedDeck, _serverManager);
             });
+        }
+
+        public async Task CleanUp()
+        {
+            _lobbyService.OnGameStarted -= HandleGameStarted;
         }
     }
 }
