@@ -11,7 +11,8 @@ namespace Memory_game
     /// </summary>
     public partial class App : Application
     {
-        public static ILobbyService SharedLobbyService { get; } = new LobbyService();
+        public static IDeckPackageService DeckPackageService { get; } = new DeckPackageService();
+        public static ILobbyService SharedLobbyService { get; } = new LobbyService(DeckPackageService);
 
     }
 

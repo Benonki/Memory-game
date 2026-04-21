@@ -9,6 +9,7 @@
         public const string PlayerDisconnected = "PlayerDisconnected";
         public const string CreateNewGame = "CreateNewGame";
         public const string GameOver = "GameOver";
+        public const string DeckPackage = "DeckPackage";
 
         // Game actions
         public const string FlipCard = "FlipCard";

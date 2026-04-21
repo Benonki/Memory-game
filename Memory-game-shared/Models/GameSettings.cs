@@ -12,6 +12,7 @@ namespace Memory_game_shared.Models
         public int Columns { get; set; }
         public string[] ImagePaths { get; set; }
         public string DeckName { get; set; } = string.Empty;
+        public byte[] DeckZipData { get; set; } = Array.Empty<byte>();
         public string LobbyName { get; set; } = "Memory Game Lobby";
         public int TurnTimeSeconds { get; set; } = 5;
     }

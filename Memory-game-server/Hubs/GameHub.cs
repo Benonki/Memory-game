@@ -44,6 +44,15 @@ namespace Memory_game_server.Hubs
 
                 _currentPlayerTurn = _players[0];
 
+                if (_gameState.settings.DeckZipData != null && _gameState.settings.DeckZipData.Length > 0)
+                {
+                    await Clients.Client(Context.ConnectionId).SendAsync(
+                        HubMethods.DeckPackage,
+                        _gameState.settings.DeckName,
+                        _gameState.settings.DeckZipData,
+                        _gameState.settings.ImagePaths.Length);
+                }
+
                 GenerateBoard(_gameState);
                 
                 await Clients.All.SendAsync(HubMethods.GameStarted, _gameState);
