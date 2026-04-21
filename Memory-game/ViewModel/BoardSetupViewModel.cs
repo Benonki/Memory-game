@@ -14,6 +14,7 @@ namespace Memory_game.ViewModel
         private string _turnTime = "5";
         private string _errorMessage = string.Empty;
         private string _selectedDeck = "DefaultDeck1";
+        private string _lobbyName = string.Empty;
         private bool _isServerStarting;
 
         private readonly ILobbyService _lobbyService;
@@ -36,11 +37,11 @@ namespace Memory_game.ViewModel
             _serverManager = serverManager;
 
             _selectedDeck = _navigationService.SelectedDeck;
+            _lobbyName = $"Gra {_selectedDeck}"; // Domyślna nazwa
 
             _lobbyService.OnGameStarted += HandleGameStarted;
 
             CanInteract = true;
-
         }
 
         public string Rows
@@ -83,6 +84,16 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public string LobbyName
+        {
+            get => _lobbyName;
+            set
+            {
+                _lobbyName = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool CanInteract
         {
             get => !_isServerStarting;
@@ -103,9 +114,7 @@ namespace Memory_game.ViewModel
             }
         }
 
-
         public RelayCommand StartCommand => new RelayCommand(async execute => await Start(), canExecute => true);
-
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
 
         private async Task Start()
@@ -138,16 +147,13 @@ namespace Memory_game.ViewModel
                     return;
                 }
 
+                if (string.IsNullOrWhiteSpace(LobbyName))
+                {
+                    ErrorMessage = "Nazwa lobby nie może być pusta";
+                    return;
+                }
 
                 ErrorMessage = "Łączenie z serwerem";
-
-                string lobbyName = Microsoft.VisualBasic.Interaction.InputBox(
-            "Podaj nazwę swojego lobby:",
-            "Nazwa lobby",
-            $"Gra {SelectedDeck}");
-
-                if (string.IsNullOrWhiteSpace(lobbyName))
-                    lobbyName = $"Gra {SelectedDeck}";
 
                 GameSettings gameSettings = new GameSettings
                 {
@@ -155,7 +161,7 @@ namespace Memory_game.ViewModel
                     Columns = columns,
                     ImagePaths = _deckService.GetCardsFromDeck(SelectedDeck),
                     DeckName = SelectedDeck,
-                    LobbyName = lobbyName,
+                    LobbyName = LobbyName.Trim(),
                     TurnTimeSeconds = turnTimeSeconds
                 };
 
@@ -170,11 +176,12 @@ namespace Memory_game.ViewModel
 
                     await _lobbyService.ConnectAsync("localhost:5000");
                     await _lobbyService.CreateNewGame(gameSettings);
-                    _broadcastService.SetLobbyName(lobbyName);
+                    _broadcastService.SetLobbyName(gameSettings.LobbyName);
                     _ = _broadcastService.StartBroadcastingAsync(5000);
 
                     ErrorMessage = "Czekanie na drugiego gracza";
-                }catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Debug.WriteLine(e.Message);
                     ErrorMessage = "Nie udało się uruchomić serwera";
@@ -184,8 +191,6 @@ namespace Memory_game.ViewModel
 
                     CanInteract = true;
                 }
-
-                
             }
             else
             {
@@ -195,7 +200,6 @@ namespace Memory_game.ViewModel
 
         private async Task Cancel()
         {
-
             await _serverManager.StopServerAsync();
             _broadcastService.StopBroadcasting();
 

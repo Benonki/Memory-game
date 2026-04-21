@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Memory_game.View"
         xmlns:vm="clr-namespace:Memory_game.ViewModel"
         mc:Ignorable="d"
-        Title="Ustawienia planszy" Height="300" Width="400"
+        Title="Ustawienia planszy" Height="350" Width="400"
         WindowStartupLocation="CenterOwner"
         d:DataContext="{d:DesignInstance Type=vm:BoardSetupViewModel}">
 
@@ -16,12 +16,22 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Label Content="Ustaw wymiary planszy" Grid.Row="0" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+        <Grid Grid.Row="0" Margin="0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Nazwa lobby:" Grid.Column="0" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" Text="{Binding LobbyName, UpdateSourceTrigger=PropertyChanged}" Margin="10,5"/>
+        </Grid>
 
-        <Grid Grid.Row="1" Margin="0,5">
+        <Label Content="Ustawienia planszy" Grid.Row="1" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,10,0,10"/>
+
+        <Grid Grid.Row="2" Margin="0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -30,7 +40,7 @@
             <TextBox Grid.Column="1" Text="{Binding Rows, UpdateSourceTrigger=PropertyChanged}" Margin="10,5"/>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,5">
+        <Grid Grid.Row="3" Margin="0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -39,7 +49,7 @@
             <TextBox Grid.Column="1" Text="{Binding Columns, UpdateSourceTrigger=PropertyChanged}" Margin="10,5"/>
         </Grid>
 
-        <Grid Grid.Row="3" Margin="0,5">
+        <Grid Grid.Row="4" Margin="0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -48,9 +58,9 @@
             <TextBox Grid.Column="1" Text="{Binding TurnTime, UpdateSourceTrigger=PropertyChanged}" Margin="10,5"/>
         </Grid>
 
-        <TextBlock Grid.Row="4" Text="{Binding ErrorMessage}" Foreground="Red" HorizontalAlignment="Center" Margin="0,10" Width="360" TextAlignment="Center" TextWrapping="Wrap"/>
+        <TextBlock Grid.Row="5" Text="{Binding ErrorMessage}" Foreground="Red" HorizontalAlignment="Center" Margin="0,10" Width="360" TextAlignment="Center" TextWrapping="Wrap"/>
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10">
             <Button Content="Cofnij" Width="80" Height="30" Margin="5" Command="{Binding CancelCommand}"/>
             <Button Content="Start" Width="80" Height="30" Margin="5" Background="LightGreen"
                      Command="{Binding StartCommand}"
