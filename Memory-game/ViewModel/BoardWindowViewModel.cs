@@ -277,13 +277,13 @@ namespace Memory_game.ViewModel
             _lobbyService.OnGameOver -= HandleGameOver;
             _lobbyService.OnPlayerDisconnected -= HandlePlayerDisconnected;
 
+            await _lobbyService.DisconnectAsync();
 
             if (_serverManager != null)
             {
                 await _serverManager.StopServerAsync();
             }
-            
-            await _lobbyService.DisconnectAsync();
+  
         }
 
     }
