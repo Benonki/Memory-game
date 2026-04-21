@@ -8,6 +8,7 @@ namespace Memory_game.Model.Services.Impl
     public class NavigationServiceImpl : INavigationService
     {
         private readonly ICardDeckService _deckService = new CardDeckServiceImpl();
+        private readonly IDeckPackageService _deckPackageService = new DeckPackageService();
         public string SelectedDeck { get; set; } = "DefaultDeck1";
         public void OpenBoardSetup()
         {

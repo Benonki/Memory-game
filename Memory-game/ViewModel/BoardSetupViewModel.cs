@@ -20,12 +20,14 @@ namespace Memory_game.ViewModel
         private readonly INavigationService _navigationService;
         private readonly IBroadcastService _broadcastService;
         private readonly IServerManager _serverManager;
+        private readonly IDeckPackageService _deckPackageService;
 
         public BoardSetupViewModel(INavigationService navigationService,
             ICardDeckService deckService,
             ILobbyService lobbyService,
             IBroadcastService broadcastService,
-            IServerManager serverManager)
+            IServerManager serverManager,
+            IDeckPackageService deckPackageService)
         {
 
             _navigationService = navigationService;
@@ -33,6 +35,7 @@ namespace Memory_game.ViewModel
             _lobbyService = lobbyService;
             _broadcastService = broadcastService;
             _serverManager = serverManager;
+            _deckPackageService = deckPackageService;
 
             _selectedDeck = _navigationService.SelectedDeck;
 
@@ -114,10 +117,20 @@ namespace Memory_game.ViewModel
                     return;
                 }
 
-                int availableCards = _deckService.GetCardCount(SelectedDeck);
+                string[] selectedDeckCards = _deckService.GetCardsFromDeck(SelectedDeck);
+                int availableCards = selectedDeckCards.Length;
                 if (totalCards / 2 > availableCards)
                 {
                     ErrorMessage = $"Wybrany zestaw kart '{SelectedDeck}' ma tylko {availableCards} kart, a potrzebujesz {totalCards / 2}. Wybierz inny zestaw lub zmniejsz wymiary planszy.";
+                    return;
+                }
+
+                ErrorMessage = "Przygotowywanie talii";
+
+                byte[] deckZipBytes = _deckPackageService.CreateDeckZip(SelectedDeck, selectedDeckCards);
+                if (deckZipBytes.Length == 0)
+                {
+                    ErrorMessage = "Nie udało się spakować wybranej talii.";
                     return;
                 }
 
@@ -135,8 +148,9 @@ namespace Memory_game.ViewModel
                 {
                     Rows = rows,
                     Columns = columns,
-                    ImagePaths = _deckService.GetCardsFromDeck(SelectedDeck),
+                    ImagePaths = selectedDeckCards,
                     DeckName = SelectedDeck,
+                    DeckZipData = deckZipBytes,
                     LobbyName = lobbyName
                 };
 

@@ -15,7 +15,11 @@ namespace Memory_game.Model.Services.Impl
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-            builder.Services.AddSignalR();
+            builder.Services.AddSignalR(options =>
+            {
+                options.MaximumReceiveMessageSize = 50 * 1024 * 1024;
+            });
+
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
             _app = builder.Build();

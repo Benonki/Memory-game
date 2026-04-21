@@ -16,7 +16,9 @@ namespace Memory_game.View
                 deckService, 
                 App.SharedLobbyService,
                 new BroadcastServiceImpl(),
-                new ServerManagerImpl());
+                new ServerManagerImpl(),
+                new DeckPackageService()
+                );
 
             DataContext = viewModel;
             Owner = Application.Current.MainWindow;

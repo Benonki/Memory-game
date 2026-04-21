@@ -2,6 +2,7 @@
 using Memory_game_shared.Models;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Diagnostics;
+using Memory_game.Model.Services;
 
 namespace Memory_game.Model.Services.Impl
 {
@@ -9,6 +10,8 @@ namespace Memory_game.Model.Services.Impl
     {
 
         HubConnection? connection;
+        private readonly IDeckPackageService _deckPackageService;
+        private Task _pendingDeckSyncTask = Task.CompletedTask;
         public event Action<GameState> OnGameStarted;
         public event Action<int> OnCardFlipped;
         public event Action<List<int>, string> OnMatchFound;
@@ -18,6 +21,11 @@ namespace Memory_game.Model.Services.Impl
         public event Action OnPlayerDisconnected;
 
         public string MyConnectionId => connection?.ConnectionId ?? "";
+
+        public LobbyService(IDeckPackageService deckPackageService)
+        {
+            _deckPackageService = deckPackageService;
+        }
 
         public async Task ConnectAsync(string serverAddress)
         {
@@ -42,9 +50,9 @@ namespace Memory_game.Model.Services.Impl
 
         private void HandleServerEvents()
         {
-            connection.On<GameState>(HubMethods.GameStarted, (gameState) =>
+            connection.On<GameState>(HubMethods.GameStarted, async (gameState) =>
             {
-                Debug.WriteLine(gameState);
+                await _pendingDeckSyncTask;
                 OnGameStarted?.Invoke(gameState);
             });
 
@@ -83,6 +91,19 @@ namespace Memory_game.Model.Services.Impl
                 OnPlayerDisconnected?.Invoke();
                 await Task.CompletedTask;
             };
+
+            connection.On<string, byte[], int>(HubMethods.DeckPackage, (deckName, deckZipData, expectedCardCount) =>
+            {
+                _pendingDeckSyncTask = Task.Run(() =>
+                {
+                    bool alreadyExists = _deckPackageService.DeckExistsAndMatches(deckName, expectedCardCount);
+
+                    if (!alreadyExists)
+                    {
+                        _deckPackageService.SaveDeckZip(deckName, deckZipData, overwriteExisting: true);
+                    }
+                });
+            });
         }
 
         public async Task JoinGameAsync()
