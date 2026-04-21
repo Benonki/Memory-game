@@ -123,12 +123,21 @@ namespace Memory_game.ViewModel
 
                 ErrorMessage = "Łączenie z serwerem";
 
+                string lobbyName = Microsoft.VisualBasic.Interaction.InputBox(
+            "Podaj nazwę swojego lobby:",
+            "Nazwa lobby",
+            $"Gra {SelectedDeck}");
+
+                if (string.IsNullOrWhiteSpace(lobbyName))
+                    lobbyName = $"Gra {SelectedDeck}";
+
                 GameSettings gameSettings = new GameSettings
                 {
                     Rows = rows,
                     Columns = columns,
                     ImagePaths = _deckService.GetCardsFromDeck(SelectedDeck),
-                    DeckName = SelectedDeck
+                    DeckName = SelectedDeck,
+                    LobbyName = lobbyName
                 };
 
                 try
@@ -142,7 +151,7 @@ namespace Memory_game.ViewModel
 
                     await _lobbyService.ConnectAsync("localhost:5000");
                     await _lobbyService.CreateNewGame(gameSettings);
-
+                    _broadcastService.SetLobbyName(lobbyName);
                     _ = _broadcastService.StartBroadcastingAsync(5000);
 
                     ErrorMessage = "Czekanie na drugiego gracza";

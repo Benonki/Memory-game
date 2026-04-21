@@ -12,5 +12,6 @@ namespace Memory_game_shared.Models
         public int Columns { get; set; }
         public string[] ImagePaths { get; set; }
         public string DeckName { get; set; } = string.Empty;
+        public string LobbyName { get; set; } = "Unknown Lobby";
     }
 }

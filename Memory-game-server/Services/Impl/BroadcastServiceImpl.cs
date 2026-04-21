@@ -9,6 +9,7 @@ namespace Memory_game_server.Services.Impl
     {
         private UdpClient? udpClient;
         private bool running;
+        private string _lobbyName = "Memory Game Lobby";
 
         public async Task StartBroadcastingAsync(int port = 5000)
         {
@@ -18,7 +19,7 @@ namespace Memory_game_server.Services.Impl
 
             while (running)
             {
-                var message = Encoding.UTF8.GetBytes($"MEMORY_GAME_SERVER:{port}");
+                var message = Encoding.UTF8.GetBytes($"MEMORY_GAME_SERVER:{port}:{_lobbyName}");
                 await udpClient.SendAsync(message, message.Length, new IPEndPoint(IPAddress.Broadcast, 7788));
 
                 await Task.Delay(2000);
@@ -29,6 +30,11 @@ namespace Memory_game_server.Services.Impl
         {
             running = false;
             udpClient?.Close();
+        }
+
+        public void SetLobbyName(string lobbyName)
+        {
+            _lobbyName = lobbyName;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Memory_game.Model.Services
 {
     public interface IServerListener
     {
-        event Action<string> ServerFound;
+        event Action<string, string> ServerFound;
         public Task StartListeningAsync();
         public void StopListening();
     }

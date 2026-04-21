@@ -4,5 +4,6 @@
     {
         public Task StartBroadcastingAsync(int port);
         public void StopBroadcasting();
+        public void SetLobbyName(string lobbyName);
     }
 }
