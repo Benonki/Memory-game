@@ -207,6 +207,8 @@ namespace Memory_game.ViewModel
 
             CanInteract = true;
 
+            _lobbyService.OnGameStarted -= HandleGameStarted;
+
             _navigationService.OpenMainWindow();
         }
 
