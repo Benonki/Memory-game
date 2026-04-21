@@ -6,6 +6,7 @@
         public const string ReceiveMessage = "ReceiveMessage";
         public const string GameStarted = "GameStarted";
         public const string JoinGame = "JoinGame";
+        public const string PlayerDisconnected = "PlayerDisconnected";
         public const string CreateNewGame = "CreateNewGame";
         public const string GameOver = "GameOver";
 

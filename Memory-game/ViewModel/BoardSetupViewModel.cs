@@ -3,27 +3,42 @@ using Memory_game.Model.Services;
 using System.Windows;
 using Memory_game_shared.Models;
 using System.Diagnostics;
+using Memory_game_server.Services;
 
 namespace Memory_game.ViewModel
 {
     public class BoardSetupViewModel : ViewModelBase
     {
-        private readonly INavigationService _navigationService;
         private string _rows = "4";
         private string _columns = "4";
         private string _errorMessage = string.Empty;
-        private readonly ICardDeckService _deckService;
-        private string _selectedDeck = "DefaultDeck1"; 
-        private readonly ILobbyService _lobbyService;
+        private string _selectedDeck = "DefaultDeck1";
+        private bool _isServerStarting;
 
-        public BoardSetupViewModel(INavigationService navigationService, ICardDeckService deckService, ILobbyService lobbyService)
+        private readonly ILobbyService _lobbyService;
+        private readonly ICardDeckService _deckService;
+        private readonly INavigationService _navigationService;
+        private readonly IBroadcastService _broadcastService;
+        private readonly IServerManager _serverManager;
+
+        public BoardSetupViewModel(INavigationService navigationService,
+            ICardDeckService deckService,
+            ILobbyService lobbyService,
+            IBroadcastService broadcastService,
+            IServerManager serverManager)
         {
+
             _navigationService = navigationService;
             _deckService = deckService;
-            _selectedDeck = _navigationService.SelectedDeck;
             _lobbyService = lobbyService;
+            _broadcastService = broadcastService;
+            _serverManager = serverManager;
+
+            _selectedDeck = _navigationService.SelectedDeck;
 
             _lobbyService.OnGameStarted += HandleGameStarted;
+
+            CanInteract = true;
 
         }
 
@@ -67,6 +82,17 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public bool CanInteract
+        {
+            get => !_isServerStarting;
+            set
+            {
+                _isServerStarting = !value;
+                OnPropertyChanged();
+            }
+        }
+
+
         public RelayCommand StartCommand => new RelayCommand(async execute => await Start(), canExecute => true);
 
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
@@ -107,13 +133,28 @@ namespace Memory_game.ViewModel
 
                 try
                 {
+                    ErrorMessage = "Uruchamianie serwera";
+                    CanInteract = false;
+
+                    await _serverManager.StartServerAsync(5000);
+
+                    ErrorMessage = "Łączenie z serwerem";
+
                     await _lobbyService.ConnectAsync("localhost:5000");
                     await _lobbyService.CreateNewGame(gameSettings);
+
+                    _ = _broadcastService.StartBroadcastingAsync(5000);
+
                     ErrorMessage = "Czekanie na drugiego gracza";
                 }catch (Exception e)
                 {
                     Debug.WriteLine(e.Message);
-                    ErrorMessage = "Nie udało się połączyć z serwerem";
+                    ErrorMessage = "Nie udało się uruchomić serwera";
+
+                    await _serverManager.StopServerAsync();
+                    _broadcastService.StopBroadcasting();
+
+                    CanInteract = true;
                 }
 
                 
@@ -124,8 +165,16 @@ namespace Memory_game.ViewModel
             }
         }
 
-        private void Cancel()
+        private async Task Cancel()
         {
+
+            await _serverManager.StopServerAsync();
+            _broadcastService.StopBroadcasting();
+
+            await _lobbyService.DisconnectAsync();
+
+            CanInteract = true;
+
             _navigationService.OpenMainWindow();
         }
 
@@ -133,9 +182,11 @@ namespace Memory_game.ViewModel
         {
             _lobbyService.OnGameStarted -= HandleGameStarted;
 
+            _broadcastService.StopBroadcasting();
+
             Application.Current.Dispatcher.Invoke(() =>
             {
-                _navigationService.OpenBoard(gameState, SelectedDeck);
+                _navigationService.OpenBoard(gameState, SelectedDeck, _serverManager);
             });
         }
     }

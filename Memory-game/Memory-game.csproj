@@ -112,10 +112,12 @@
   </ItemGroup>
 
   <ItemGroup>
+	<FrameworkReference Include="Microsoft.AspNetCore.App"/>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.5" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Memory-game-server\Memory-game-server.csproj" />
     <ProjectReference Include="..\Memory-game-shared\Memory-game-shared.csproj" />
   </ItemGroup>
 

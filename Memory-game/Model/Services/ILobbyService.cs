@@ -15,6 +15,7 @@ namespace Memory_game.Model.Services
         public event Action<List<int>> OnMatchFailed;
         public event Action<string> OnTurnChanged;
         public event Action<string> OnGameOver;
+        public event Action OnPlayerDisconnected;
 
         public string MyConnectionId { get; }
         public Task SendFlipCardAsync(int cardId);

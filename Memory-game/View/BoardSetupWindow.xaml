@@ -40,7 +40,9 @@
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="93,0,0,95" Grid.Row="1">
             <Button Content="Cofnij" Width="80" Height="30" Margin="5" Command="{Binding CancelCommand}"/>
-            <Button Content="Start" Width="80" Height="30" Margin="5" Command="{Binding StartCommand}" Background="LightGreen"/>
+            <Button Content="Start" Width="80" Height="30" Margin="5" Background="LightGreen"
+                     Command="{Binding StartCommand}"
+                    IsEnabled="{Binding CanInteract}"/>
         </StackPanel>
     </Grid>
 </Window>
