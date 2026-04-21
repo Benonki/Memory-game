@@ -11,6 +11,7 @@ namespace Memory_game.ViewModel
     {
         private string _rows = "4";
         private string _columns = "4";
+        private string _turnTime = "5";
         private string _errorMessage = string.Empty;
         private string _selectedDeck = "DefaultDeck1";
         private bool _isServerStarting;
@@ -92,6 +93,16 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public string TurnTime
+        {
+            get => _turnTime;
+            set
+            {
+                _turnTime = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public RelayCommand StartCommand => new RelayCommand(async execute => await Start(), canExecute => true);
 
@@ -121,6 +132,13 @@ namespace Memory_game.ViewModel
                     return;
                 }
 
+                if (!int.TryParse(TurnTime, out int turnTimeSeconds) || turnTimeSeconds < 3 || turnTimeSeconds > 60)
+                {
+                    ErrorMessage = "Czas na ruch musi być liczbą całkowitą w zakresie 3-60 sekund";
+                    return;
+                }
+
+
                 ErrorMessage = "Łączenie z serwerem";
 
                 string lobbyName = Microsoft.VisualBasic.Interaction.InputBox(
@@ -137,7 +155,8 @@ namespace Memory_game.ViewModel
                     Columns = columns,
                     ImagePaths = _deckService.GetCardsFromDeck(SelectedDeck),
                     DeckName = SelectedDeck,
-                    LobbyName = lobbyName
+                    LobbyName = lobbyName,
+                    TurnTimeSeconds = turnTimeSeconds
                 };
 
                 try
