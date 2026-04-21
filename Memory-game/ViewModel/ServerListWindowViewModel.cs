@@ -65,6 +65,7 @@ namespace Memory_game.ViewModel
 
         public void CleanUp()
         {
+            _lobbyService.OnGameStarted -= HandleGameStarter;
             _serverListener.StopListening();
             Debug.WriteLine("Closing udp");
         }
