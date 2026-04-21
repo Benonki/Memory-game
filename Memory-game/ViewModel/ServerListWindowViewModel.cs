@@ -14,6 +14,8 @@ namespace Memory_game.ViewModel
         private INavigationService _navigationService;
 
         public ObservableCollection<string> AvailableServers { get; } = new();
+        private Dictionary<string, string> _lobbyAddresses = new();
+        private bool _isConnecting = false;
 
         public RelayCommand ConnectToSevrer => new RelayCommand(async execute => await JoinGameAsync(), canExecute => true);
         public ServerListWindowViewModel(IServerListener serverListener, ILobbyService lobbyService, INavigationService navigationService)
@@ -22,15 +24,17 @@ namespace Memory_game.ViewModel
             _lobbyService = lobbyService;
             _navigationService = navigationService;
 
-            _serverListener.ServerFound += (serverAddress =>
+            _serverListener.ServerFound += (lobbyName, address) =>
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    if (!AvailableServers.Contains(serverAddress))
-                        AvailableServers.Add(serverAddress);
+                    if (!AvailableServers.Contains(lobbyName))
+                    {
+                        AvailableServers.Add(lobbyName);
+                        _lobbyAddresses[lobbyName] = address;
+                    }
                 });
-
-            });
+            };
 
             _serverListener.StartListeningAsync();
             _lobbyService.OnGameStarted += HandleGameStarter;
@@ -50,8 +54,27 @@ namespace Memory_game.ViewModel
 
         private async Task JoinGameAsync()
         {
-            await _lobbyService.ConnectAsync(SelectedServer);
-            await _lobbyService.JoinGameAsync();
+            if (_isConnecting) return;
+            _isConnecting = true;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(SelectedServer) && _lobbyAddresses.ContainsKey(SelectedServer))
+                {
+                    string address = _lobbyAddresses[SelectedServer];
+                    await _lobbyService.ConnectAsync(address);
+                    await _lobbyService.JoinGameAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Błąd łączenia: {ex.Message}");
+                MessageBox.Show($"Nie udało się połączyć z serwerem: {ex.Message}", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                _isConnecting = false;
+            }
         }
 
         private void HandleGameStarter(GameState gameState)

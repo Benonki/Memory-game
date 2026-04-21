@@ -10,7 +10,7 @@ namespace Memory_game.Model.Services.Impl
 {
     public class ServerListener : IServerListener
     {
-        public event Action<string>? ServerFound;
+        public event Action<string, string>? ServerFound;
         private UdpClient? udpClient;
         private bool running;
 
@@ -31,10 +31,13 @@ namespace Memory_game.Model.Services.Impl
 
                     if (message.StartsWith("MEMORY_GAME_SERVER"))
                     {
-                        var port = message.Split(':')[1];
+                        var parts = message.Split(':');
+                        var port = parts[1];
                         var serverIP = result.RemoteEndPoint.Address.ToString();
+                        string lobbyName = parts.Length > 2 ? parts[2] : $"{serverIP}:{port}";
+                        string address = $"{serverIP}:{port}";
 
-                        ServerFound?.Invoke($"{serverIP}:{port}");
+                        ServerFound?.Invoke(lobbyName, address);
                     }
                 }catch(Exception e)
                 {
