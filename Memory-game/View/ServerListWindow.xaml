@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Memory_game.View"
         xmlns:vm ="clr-namespace:Memory_game.ViewModel"
         mc:Ignorable="d"
-        Title="ServerListWindow" Height="450" Width="800"
+        Title="Lista lobby" Height="450" Width="800"
         d:DataContext="{d:DesignInstance Type=vm:ServerListWindowViewModel}">
     <Grid>
 

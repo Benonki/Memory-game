@@ -195,6 +195,13 @@ namespace Memory_game_server.Hubs
                 _currentlyFlippedCards.Clear();
             }
 
+            bool allMatched = _gameState.CardsOnBoard.All(card => card.isMatched);
+            if (allMatched)
+            {
+                await CheckGameOver();
+                return;
+            }
+
             _currentPlayerTurn = _players.First(player => player != _currentPlayerTurn);
 
             int turnTimeSeconds = _gameState.settings.TurnTimeSeconds;
