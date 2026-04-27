@@ -21,6 +21,7 @@ namespace Memory_game_server.Hubs
             _players.Add(Context.ConnectionId);
 
             _gameState.settings = gameSettings;
+            _gameState.Scores.Clear();
         }
 
 
@@ -29,6 +30,7 @@ namespace Memory_game_server.Hubs
             if (!_players.Contains(Context.ConnectionId))
             {
                 _players.Add(Context.ConnectionId);
+                _gameState.Scores[Context.ConnectionId] = 0;
             }
 
             int maxPlayers = _gameState.settings.MaxPlayers;
@@ -71,7 +73,7 @@ namespace Memory_game_server.Hubs
                 return;
 
             Card cardToFlip = _gameState.CardsOnBoard.FirstOrDefault(card => card.id == cardId);
-            if (cardToFlip == null || cardToFlip.isFaceUp)
+            if (cardToFlip == null || cardToFlip.isFaceUp || cardToFlip.isMatched)
                 return;
 
             cardToFlip.isFaceUp = true;
@@ -87,10 +89,11 @@ namespace Memory_game_server.Hubs
                 {
                     firstCard.isMatched = true;
                     secondCard.isMatched = true;
+
                     _gameState.Scores[_currentPlayerTurn] = _gameState.Scores.GetValueOrDefault(_currentPlayerTurn, 0) + 1;
 
-                    await CheckGameOver();
                     await Clients.All.SendAsync(HubMethods.MatchFound, _currentlyFlippedCards, _currentPlayerTurn);
+                    await CheckGameOver();
                 }
                 else
                 {
@@ -112,6 +115,7 @@ namespace Memory_game_server.Hubs
 
         private void GenerateBoard(GameState gameState)
         {
+            _gameState.CardsOnBoard.Clear()
             int totalCards = gameState.settings.Rows * gameState.settings.Columns;
             int pairOfCards = totalCards / 2;
 
@@ -169,10 +173,8 @@ namespace Memory_game_server.Hubs
                         result = "win";
                     else if (winners.Count > 1 && winners.Contains(playerId))
                         result = "draw";
-                    else if (winners.Count == 1)
-                        result = "loss";
                     else
-                        result = "draw";
+                        result = "loss";
 
                     await Clients.Client(playerId).SendAsync(HubMethods.GameOver, result);
                 }
@@ -212,12 +214,8 @@ namespace Memory_game_server.Hubs
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             _players.Remove(Context.ConnectionId);
-
             await Clients.All.SendAsync(HubMethods.PlayerDisconnected);
-
             await base.OnDisconnectedAsync(exception);
         }
-
-
     }
 }

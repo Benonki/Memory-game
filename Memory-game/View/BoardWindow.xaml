@@ -45,7 +45,7 @@
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Wynik przeciwnika: " FontSize="18" FontWeight="Bold"/>
-                    <TextBlock Text="{Binding OpponentScore}" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" Foreground="Red"/>
+                    <TextBlock Text="{Binding OpponentBestScore}" FontSize="18" FontWeight="Bold" Foreground="Red"/>
                 </StackPanel>
             </Grid>
         </Border>

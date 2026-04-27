@@ -13,7 +13,9 @@ namespace Memory_game.ViewModel
         private int _rows;
         private int _columns;
         private int _myScore;
-        private int _opponentScore;
+        private int _opponentBestScore;
+        private string _myPlayerId;
+        private Dictionary<string, int> _allScores = new Dictionary<string, int>();
         private string _currentTurnText;
         private bool _isProcessingMove;
         private double _timeLeft;
@@ -58,12 +60,12 @@ namespace Memory_game.ViewModel
             }
         }
 
-        public int OpponentScore
+        public int OpponentBestScore
         {
-            get => _opponentScore;
+            get => _opponentBestScore;
             set
             {
-                _opponentScore = value;
+                _opponentBestScore = value;
                 OnPropertyChanged();
             }
         }
@@ -115,8 +117,9 @@ namespace Memory_game.ViewModel
         {
             _rows = gameState.settings.Rows;
             _columns = gameState.settings.Columns;
+            _myPlayerId = lobbyService.MyConnectionId;
             _myScore = 0;
-            _opponentScore = 0;
+            _opponentBestScore = 0;
             CanInteract = true;
             _turnTimeSeconds = gameState.settings.TurnTimeSeconds;
             TimeLeft = _turnTimeSeconds;
@@ -180,16 +183,31 @@ namespace Memory_game.ViewModel
                         card.IsMatched = true;
                 }
 
-                if (currentPlayerId == _lobbyService.MyConnectionId)
+                if (!_allScores.ContainsKey(currentPlayerId))
+                    _allScores[currentPlayerId] = 0;
+                _allScores[currentPlayerId]++;
+
+                if (currentPlayerId == _myPlayerId)
                 {
-                    MyScore++;
+                    MyScore = _allScores[currentPlayerId];
                     ResetTimer();
                 }
-                else
-                {
-                    OpponentScore++;
-                }
+
+                UpdateOpponentBestScore();
             });
+        }
+
+        private void UpdateOpponentBestScore()
+        {
+            int bestOpponentScore = 0;
+            foreach (var score in _allScores)
+            {
+                if (score.Key != _myPlayerId && score.Value > bestOpponentScore)
+                {
+                    bestOpponentScore = score.Value;
+                }
+            }
+            OpponentBestScore = bestOpponentScore;
         }
 
         private void HandleCardsMatchFailed(List<int> cardIds)
