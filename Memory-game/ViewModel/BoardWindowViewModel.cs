@@ -131,6 +131,7 @@ namespace Memory_game.ViewModel
             _lobbyService.OnTurnChanged += HandleTurnChange;
             _lobbyService.OnGameOver += HandleGameOver;
             _lobbyService.OnPlayerDisconnected += HandlePlayerDisconnected;
+            _lobbyService.OnWaitingForPlayers += HandleWaitingForPlayers;
 
             InitializeCards(gameState.CardsOnBoard ,deckName);
         }
@@ -353,6 +354,13 @@ namespace Memory_game.ViewModel
 
            
         }
+        private void HandleWaitingForPlayers(int currentCount, int maxCount)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                CurrentTurnText = $"Oczekiwanie na graczy... ({currentCount}/{maxCount})";
+            });
+        }
 
         public async Task Cleanup()
         {
@@ -363,6 +371,7 @@ namespace Memory_game.ViewModel
             _lobbyService.OnTurnChanged -= HandleTurnChange;
             _lobbyService.OnGameOver -= HandleGameOver;
             _lobbyService.OnPlayerDisconnected -= HandlePlayerDisconnected;
+            _lobbyService.OnWaitingForPlayers -= HandleWaitingForPlayers;
 
             await _lobbyService.DisconnectAsync();
 

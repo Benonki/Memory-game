@@ -19,6 +19,7 @@ namespace Memory_game.Model.Services.Impl
         public event Action<string, int> OnTurnChanged;
         public event Action<string> OnGameOver;
         public event Action OnPlayerDisconnected;
+        public event Action<int, int> OnWaitingForPlayers;
 
         public string MyConnectionId => connection?.ConnectionId ?? "";
 
@@ -84,6 +85,11 @@ namespace Memory_game.Model.Services.Impl
             connection.On(HubMethods.PlayerDisconnected, () =>
             {
                 OnPlayerDisconnected?.Invoke();
+            });
+
+            connection.On<int, int>(HubMethods.WaitingForPlayers, (currentCount, maxCount) =>
+            {
+                OnWaitingForPlayers?.Invoke(currentCount, maxCount);
             });
 
             connection.Closed += async (error) =>

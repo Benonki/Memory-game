@@ -8,16 +8,31 @@
         mc:Ignorable="d"
         Title="Lista lobby" Height="450" Width="800"
         d:DataContext="{d:DesignInstance Type=vm:ServerListWindowViewModel}">
-    <Grid>
 
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
         <ListBox ItemsSource="{Binding AvailableServers}"
                  SelectedItem="{Binding SelectedServer}"/>
-        <Button Content="Connect" Grid.Row="1" Width="100" Height="50"
-                Command="{Binding ConnectToSevrer}"/>
 
+        <TextBlock Grid.Row="1" 
+                   Text="{Binding WaitingMessage}" 
+                   HorizontalAlignment="Center" 
+                   FontSize="16" 
+                   FontWeight="Bold"
+                   Foreground="Blue"
+                   Margin="10"
+                   Visibility="{Binding IsWaiting, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+        <Button Grid.Row="2" Content="Connect" Width="100" Height="50"
+                Command="{Binding ConnectToSevrer}"/>
     </Grid>
 </Window>

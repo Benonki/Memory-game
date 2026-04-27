@@ -12,6 +12,7 @@ namespace Memory_game.ViewModel
         private string _rows = "4";
         private string _columns = "4";
         private string _turnTime = "5";
+        private string _maxPlayers = "2";
         private string _errorMessage = string.Empty;
         private string _selectedDeck = "DefaultDeck1";
         private string _lobbyName = string.Empty;
@@ -117,6 +118,16 @@ namespace Memory_game.ViewModel
             }
         }
 
+        public string MaxPlayers
+        {
+            get => _maxPlayers;
+            set
+            {
+                _maxPlayers = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand StartCommand => new RelayCommand(async execute => await Start(), canExecute => true);
         public RelayCommand CancelCommand => new RelayCommand(execute => Cancel(), canExecute => true);
 
@@ -160,6 +171,12 @@ namespace Memory_game.ViewModel
                     return;
                 }
 
+                if (!int.TryParse(MaxPlayers, out int maxPlayers) || maxPlayers < 2 || maxPlayers > 4)
+                {
+                    ErrorMessage = "Liczba graczy musi być w zakresie 2-4";
+                    return;
+                }
+
                 if (string.IsNullOrWhiteSpace(LobbyName))
                 {
                     ErrorMessage = "Nazwa lobby nie może być pusta";
@@ -176,7 +193,8 @@ namespace Memory_game.ViewModel
                     DeckName = SelectedDeck,
                     DeckZipData = deckZipBytes,
                     LobbyName = LobbyName.Trim(),
-                    TurnTimeSeconds = turnTimeSeconds
+                    TurnTimeSeconds = turnTimeSeconds,
+                    MaxPlayers = maxPlayers
                 };
 
                 try

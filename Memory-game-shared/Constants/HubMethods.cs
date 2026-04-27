@@ -10,6 +10,7 @@
         public const string CreateNewGame = "CreateNewGame";
         public const string GameOver = "GameOver";
         public const string DeckPackage = "DeckPackage";
+        public const string WaitingForPlayers = "WaitingForPlayers";
 
         // Game actions
         public const string FlipCard = "FlipCard";

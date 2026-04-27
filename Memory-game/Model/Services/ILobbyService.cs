@@ -16,6 +16,7 @@ namespace Memory_game.Model.Services
         public event Action<string, int> OnTurnChanged;
         public event Action<string> OnGameOver;
         public event Action OnPlayerDisconnected;
+        public event Action<int, int> OnWaitingForPlayers;
 
         public string MyConnectionId { get; }
         public Task SendFlipCardAsync(int cardId);
