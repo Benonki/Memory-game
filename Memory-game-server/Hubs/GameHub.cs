@@ -15,12 +15,6 @@ namespace Memory_game_server.Hubs
         private static List<int> _currentlyFlippedCards = new List<int>();
         private static int _currentPlayerIndex = 0;
 
-        public async Task SendMessage(string message)
-        {
-            Debug.WriteLine($"Na serwerze {message} ");
-            await Clients.All.SendAsync(HubMethods.ReceiveMessage, "Message from server");
-        }
-
         public async Task CreateNewGame(GameSettings gameSettings)
         {
             _players.Clear();

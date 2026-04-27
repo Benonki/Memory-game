@@ -126,12 +126,6 @@ namespace Memory_game.Model.Services.Impl
                 await connection.StopAsync();
         }
 
-        public async Task SendMessageAsync()
-        {
-            if(connection != null )
-                await connection.InvokeAsync(HubMethods.SendMessage, "Message from client");
-        }
-
         public async Task CreateNewGame(GameSettings gameSettings)
         {
             if(connection != null)

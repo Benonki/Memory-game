@@ -23,7 +23,6 @@ namespace Memory_game.Model.Services
         public Task CreateNewGame(GameSettings gameSettings);
         public Task ConnectAsync(string serverAddress);
         public Task JoinGameAsync();
-        public Task SendMessageAsync();
         public Task DisconnectAsync();
         public Task SendTurnTimeoutAsync();
 
