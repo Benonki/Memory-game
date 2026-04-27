@@ -115,7 +115,7 @@ namespace Memory_game_server.Hubs
 
         private void GenerateBoard(GameState gameState)
         {
-            _gameState.CardsOnBoard.Clear()
+            _gameState.CardsOnBoard.Clear();
             int totalCards = gameState.settings.Rows * gameState.settings.Columns;
             int pairOfCards = totalCards / 2;
 
