@@ -13,12 +13,7 @@ namespace Memory_game_server.Hubs
         private static List<string> _players = new List<string>();
         private static string _currentPlayerTurn = "";
         private static List<int> _currentlyFlippedCards = new List<int>();
-
-        public async Task SendMessage(string message)
-        {
-            Debug.WriteLine($"Na serwerze {message} ");
-            await Clients.All.SendAsync(HubMethods.ReceiveMessage, "Message from server");
-        }
+        private static int _currentPlayerIndex = 0;
 
         public async Task CreateNewGame(GameSettings gameSettings)
         {
@@ -26,6 +21,7 @@ namespace Memory_game_server.Hubs
             _players.Add(Context.ConnectionId);
 
             _gameState.settings = gameSettings;
+            _gameState.Scores.Clear();
         }
 
 
@@ -34,72 +30,79 @@ namespace Memory_game_server.Hubs
             if (!_players.Contains(Context.ConnectionId))
             {
                 _players.Add(Context.ConnectionId);
-                Debug.WriteLine("New player joined");
-
+                _gameState.Scores[Context.ConnectionId] = 0;
             }
-           
 
-            if(_players.Count == 2)
+            int maxPlayers = _gameState.settings.MaxPlayers;
+
+            await Clients.All.SendAsync(HubMethods.WaitingForPlayers, _players.Count, maxPlayers);
+
+            if (_players.Count == maxPlayers)
             {
-
-                _currentPlayerTurn = _players[0];
+                Random rng = new Random();
+                _currentPlayerIndex = rng.Next(_players.Count);
+                _currentPlayerTurn = _players[_currentPlayerIndex];
 
                 if (_gameState.settings.DeckZipData != null && _gameState.settings.DeckZipData.Length > 0)
                 {
-                    await Clients.Client(Context.ConnectionId).SendAsync(
-                        HubMethods.DeckPackage,
-                        _gameState.settings.DeckName,
-                        _gameState.settings.DeckZipData,
-                        _gameState.settings.ImagePaths.Length);
+                    foreach (var playerId in _players)
+                    {
+                        if (playerId != _players[0])
+                        {
+                            await Clients.Client(playerId).SendAsync(
+                                HubMethods.DeckPackage,
+                                _gameState.settings.DeckName,
+                                _gameState.settings.DeckZipData,
+                                _gameState.settings.ImagePaths.Length);
+                        }
+                    }
                 }
 
                 GenerateBoard(_gameState);
-                
+
                 await Clients.All.SendAsync(HubMethods.GameStarted, _gameState);
 
                 int turnTimeSeconds = _gameState.settings.TurnTimeSeconds;
                 await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn, turnTimeSeconds);
             }
-
         }
 
         public async Task FlipCard(int cardId)
         {
-
             if (Context.ConnectionId != _currentPlayerTurn)
                 return;
 
-
             Card cardToFlip = _gameState.CardsOnBoard.FirstOrDefault(card => card.id == cardId);
-
-            if (cardToFlip == null || cardToFlip.isFaceUp)
+            if (cardToFlip == null || cardToFlip.isFaceUp || cardToFlip.isMatched)
                 return;
-
 
             cardToFlip.isFaceUp = true;
             _currentlyFlippedCards.Add(cardId);
             await Clients.All.SendAsync(HubMethods.FlipCard, cardId);
 
-            if(_currentlyFlippedCards.Count == 2)
+            if (_currentlyFlippedCards.Count == 2)
             {
                 Card firstCard = _gameState.CardsOnBoard.First(card => card.id == _currentlyFlippedCards[0]);
                 Card secondCard = _gameState.CardsOnBoard.First(card => card.id == _currentlyFlippedCards[1]);
 
-                if(firstCard.pairId == secondCard.pairId)
+                if (firstCard.pairId == secondCard.pairId)
                 {
                     firstCard.isMatched = true;
                     secondCard.isMatched = true;
+
                     _gameState.Scores[_currentPlayerTurn] = _gameState.Scores.GetValueOrDefault(_currentPlayerTurn, 0) + 1;
-                    await CheckGameOver();
 
                     await Clients.All.SendAsync(HubMethods.MatchFound, _currentlyFlippedCards, _currentPlayerTurn);
-                }else
+                    await CheckGameOver();
+                }
+                else
                 {
                     await Task.Delay(1000);
                     firstCard.isFaceUp = false;
                     secondCard.isFaceUp = false;
 
-                    _currentPlayerTurn = _players.First(player => player != _currentPlayerTurn);
+                    _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
+                    _currentPlayerTurn = _players[_currentPlayerIndex];
 
                     await Clients.All.SendAsync(HubMethods.MatchFailed, _currentlyFlippedCards);
 
@@ -108,11 +111,11 @@ namespace Memory_game_server.Hubs
                 }
                 _currentlyFlippedCards.Clear();
             }
-            
         }
 
         private void GenerateBoard(GameState gameState)
         {
+            _gameState.CardsOnBoard.Clear();
             int totalCards = gameState.settings.Rows * gameState.settings.Columns;
             int pairOfCards = totalCards / 2;
 
@@ -160,21 +163,21 @@ namespace Memory_game_server.Hubs
 
             if (allMatched)
             {
-                int player1Score = _gameState.Scores.GetValueOrDefault(_players[0], 0);
-                int player2Score = _gameState.Scores.GetValueOrDefault(_players[1], 0);
+                int maxScore = _gameState.Scores.Values.Max();
+                var winners = _gameState.Scores.Where(s => s.Value == maxScore).Select(s => s.Key).ToList();
 
-                string result;
-                if (player1Score > player2Score)
-                    result = "win";
-                else if (player2Score > player1Score)
-                    result = "loss";
-                else
-                    result = "draw";
+                foreach (var playerId in _players)
+                {
+                    string result;
+                    if (winners.Count == 1 && winners[0] == playerId)
+                        result = "win";
+                    else if (winners.Count > 1 && winners.Contains(playerId))
+                        result = "draw";
+                    else
+                        result = "loss";
 
-                await Clients.Client(_players[0]).SendAsync(HubMethods.GameOver,
-                    player1Score > player2Score ? "win" : (player1Score == player2Score ? "draw" : "loss"));
-                await Clients.Client(_players[1]).SendAsync(HubMethods.GameOver,
-                    player2Score > player1Score ? "win" : (player1Score == player2Score ? "draw" : "loss"));
+                    await Clients.Client(playerId).SendAsync(HubMethods.GameOver, result);
+                }
             }
         }
 
@@ -202,7 +205,8 @@ namespace Memory_game_server.Hubs
                 return;
             }
 
-            _currentPlayerTurn = _players.First(player => player != _currentPlayerTurn);
+            _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.Count;
+            _currentPlayerTurn = _players[_currentPlayerIndex];
 
             int turnTimeSeconds = _gameState.settings.TurnTimeSeconds;
             await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn, turnTimeSeconds);
@@ -210,12 +214,8 @@ namespace Memory_game_server.Hubs
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             _players.Remove(Context.ConnectionId);
-
             await Clients.All.SendAsync(HubMethods.PlayerDisconnected);
-
             await base.OnDisconnectedAsync(exception);
         }
-
-
     }
 }

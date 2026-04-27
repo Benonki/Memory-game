@@ -17,6 +17,39 @@ namespace Memory_game.ViewModel
         private Dictionary<string, string> _lobbyAddresses = new();
         private bool _isConnecting = false;
 
+        private string _waitingMessage = string.Empty;
+        public string WaitingMessage
+        {
+            get => _waitingMessage;
+            set
+            {
+                _waitingMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isWaiting;
+        public bool IsWaiting
+        {
+            get => _isWaiting;
+            set
+            {
+                _isWaiting = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _canConnect = true;
+        public bool CanConnect
+        {
+            get => _canConnect;
+            set
+            {
+                _canConnect = value;
+                OnPropertyChanged();
+            }
+        }
+
         public RelayCommand ConnectToSevrer => new RelayCommand(async execute => await JoinGameAsync(), canExecute => true);
         public ServerListWindowViewModel(IServerListener serverListener, ILobbyService lobbyService, INavigationService navigationService)
         {
@@ -38,6 +71,7 @@ namespace Memory_game.ViewModel
 
             _serverListener.StartListeningAsync();
             _lobbyService.OnGameStarted += HandleGameStarter;
+            _lobbyService.OnWaitingForPlayers += HandleWaitingForPlayers;
 
         }
 
@@ -77,11 +111,24 @@ namespace Memory_game.ViewModel
             }
         }
 
+        private void HandleWaitingForPlayers(int currentCount, int maxCount)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                IsWaiting = true;
+                CanConnect = false;
+                WaitingMessage = $"Oczekiwanie na graczy... ({currentCount}/{maxCount})";
+            });
+        }
+
         private void HandleGameStarter(GameState gameState)
         {
             _lobbyService.OnGameStarted -= HandleGameStarter;
+            _lobbyService.OnWaitingForPlayers -= HandleWaitingForPlayers;
+
             Application.Current.Dispatcher.Invoke(() =>
             {
+                IsWaiting = false;
                 _navigationService.OpenBoard(gameState, gameState.settings.DeckName);
             });
         }
@@ -89,6 +136,7 @@ namespace Memory_game.ViewModel
         public void CleanUp()
         {
             _lobbyService.OnGameStarted -= HandleGameStarter;
+            _lobbyService.OnWaitingForPlayers -= HandleWaitingForPlayers;
             _serverListener.StopListening();
             Debug.WriteLine("Closing udp");
         }

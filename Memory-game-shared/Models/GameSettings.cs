@@ -15,5 +15,6 @@ namespace Memory_game_shared.Models
         public byte[] DeckZipData { get; set; } = Array.Empty<byte>();
         public string LobbyName { get; set; } = "Memory Game Lobby";
         public int TurnTimeSeconds { get; set; } = 5;
+        public int MaxPlayers { get; set; } = 2;
     }
 }
