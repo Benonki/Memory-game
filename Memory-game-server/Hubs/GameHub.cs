@@ -217,13 +217,12 @@ namespace Memory_game_server.Hubs
             string diconnectedPlayer = Context.ConnectionId;
 
             bool wasHisTurn = (_currentPlayerTurn == diconnectedPlayer);
-            bool isHost = (_currentPlayerTurn == _gameState.HostId);
+            bool isHost = (diconnectedPlayer == _gameState.HostId);
             _players.Remove(diconnectedPlayer);
 
-            if(_players.Count < 2 || isHost)
+            if(_players.Count < 1 || isHost)
             {
                 await Clients.All.SendAsync(HubMethods.PlayerDisconnected);
-                _players.Clear();
             }
             else
             {

@@ -16,6 +16,7 @@ namespace Memory_game.ViewModel
         public ObservableCollection<string> AvailableServers { get; } = new();
         private Dictionary<string, string> _lobbyAddresses = new();
         private bool _isConnecting = false;
+        private bool _isGameStarting = false;
 
         private string _waitingMessage = string.Empty;
         public string WaitingMessage
@@ -123,6 +124,8 @@ namespace Memory_game.ViewModel
 
         private void HandleGameStarter(GameState gameState)
         {
+
+            _isGameStarting = true;
             _lobbyService.OnGameStarted -= HandleGameStarter;
             _lobbyService.OnWaitingForPlayers -= HandleWaitingForPlayers;
 
@@ -137,6 +140,10 @@ namespace Memory_game.ViewModel
         {
             _lobbyService.OnGameStarted -= HandleGameStarter;
             _lobbyService.OnWaitingForPlayers -= HandleWaitingForPlayers;
+
+            if(!_isGameStarting)
+                _lobbyService.DisconnectAsync();
+
             _serverListener.StopListening();
             Debug.WriteLine("Closing udp");
         }
