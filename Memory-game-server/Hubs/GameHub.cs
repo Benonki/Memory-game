@@ -213,8 +213,35 @@ namespace Memory_game_server.Hubs
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            _players.Remove(Context.ConnectionId);
-            await Clients.All.SendAsync(HubMethods.PlayerDisconnected);
+            string diconnectedPlayer = Context.ConnectionId;
+
+            bool wasHisTurn = (_currentPlayerTurn == diconnectedPlayer);
+
+            _players.Remove(diconnectedPlayer);
+
+            if(_players.Count < 2)
+            {
+                await Clients.All.SendAsync(HubMethods.PlayerDisconnected);
+            }
+            else
+            {
+                if (wasHisTurn)
+                {
+                    if(_currentlyFlippedCards.Count > 0)
+                    {
+                        await Clients.All.SendAsync(HubMethods.MatchFailed, _currentlyFlippedCards);
+                        _currentlyFlippedCards.Clear();
+                    }
+
+                    if(_currentPlayerIndex >= _players.Count)
+                    {
+                        _currentPlayerIndex = 0;
+                    }
+                    _currentPlayerTurn = _players[_currentPlayerIndex];
+                    int turnTimeSeconds = _gameState.settings.TurnTimeSeconds;
+                    await Clients.All.SendAsync(HubMethods.ChangeTurn, _currentPlayerTurn, turnTimeSeconds);
+                }
+            }
             await base.OnDisconnectedAsync(exception);
         }
     }
