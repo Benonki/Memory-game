@@ -224,7 +224,7 @@ namespace Memory_game_server.Hubs
                     else
                         result = "loss";
 
-                    await Clients.Client(session.ConnectionId).SendAsync(HubMethods.GameOver, result);
+                    await Clients.Client(session.ConnectionId).SendAsync(HubMethods.GameOver, result, _gameState.Scores);
                 }
             }
         }

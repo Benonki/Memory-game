@@ -18,7 +18,7 @@ namespace Memory_game.Model.Services.Impl
         public event Action<List<int>, string> OnMatchFound;
         public event Action<List<int>> OnMatchFailed;
         public event Action<string, int> OnTurnChanged;
-        public event Action<string> OnGameOver;
+        public event Action<string, Dictionary<string, int>> OnGameOver;
         public event Action OnPlayerDisconnected;
         public event Action<int, int> OnWaitingForPlayers;
         public string PlayerToken => _playerTokenService.PlayerToken;
@@ -81,9 +81,9 @@ namespace Memory_game.Model.Services.Impl
                 OnTurnChanged?.Invoke(currentPlayerId, turnTimeSeconds);
             });
 
-            connection.On<string>(HubMethods.GameOver, (result) =>
+            connection.On<string, Dictionary<string, int>>(HubMethods.GameOver, (result, scores) =>
             {
-                OnGameOver?.Invoke(result);
+                OnGameOver?.Invoke(result, scores);
             });
 
             connection.On(HubMethods.PlayerDisconnected, () =>
