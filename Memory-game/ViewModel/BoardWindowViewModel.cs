@@ -17,6 +17,7 @@ namespace Memory_game.ViewModel
         private Dictionary<string, int> _allScores = new Dictionary<string, int>();
         private string _currentTurnText = string.Empty;
         private bool _isProcessingMove;
+        private bool _hasHandledFatalDisconnect;
         private double _timeLeft;
         private int _turnTimeSeconds = 5;
         private DispatcherTimer? _turnTimer;
@@ -378,12 +379,31 @@ namespace Memory_game.ViewModel
             }
         }
 
-        private async void HandlePlayerDisconnected()
+        private void HandlePlayerDisconnected(string reason)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
+                if (reason == Memory_game_shared.Constants.DisconnectReasons.PlayerDisconnected)
+                {
+                    MessageBox.Show("Jeden z graczy rozłączył się. Gra trwa dalej.");
+                    return;
+                }
+
+                if (_hasHandledFatalDisconnect)
+                    return;
+
+                _hasHandledFatalDisconnect = true;
                 StopTimer();
-                MessageBox.Show("Jeden z graczy rozłączył się");
+                CanInteract = false;
+
+                string message = reason switch
+                {
+                    Memory_game_shared.Constants.DisconnectReasons.HostDisconnected => "Host rozłączył się. Gra została zakończona.",
+                    Memory_game_shared.Constants.DisconnectReasons.NotEnoughPlayers => "Zostałeś sam w grze. Gra została zakończona.",
+                    _ => "Utracono połączenie z serwerem. Gra została zakończona."
+                };
+
+                MessageBox.Show(message);
                 
                 foreach(Window window in Application.Current.Windows)
                 {
@@ -396,7 +416,6 @@ namespace Memory_game.ViewModel
               
             });
 
-           
         }
         private void HandleWaitingForPlayers(int currentCount, int maxCount)
         {
