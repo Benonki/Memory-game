@@ -6,20 +6,18 @@ namespace Memory_game.ViewModel
     {
         private int _score;
 
-        public PlayerScoreViewModel(string playerId, bool isCurrentPlayer, int score)
+        public PlayerScoreViewModel(string displayName, bool isCurrentPlayer, int score)
         {
-            PlayerId = playerId;
+            PlayerName = displayName;
             IsCurrentPlayer = isCurrentPlayer;
             _score = score;
         }
 
-        public string PlayerId { get; }
+        public string PlayerName { get; }
 
         public bool IsCurrentPlayer { get; }
 
-        public string DisplayName => IsCurrentPlayer ? "Ty" : $"Gracz {ShortPlayerId}";
-
-        public string ShortPlayerId => PlayerId.Length <= 6 ? PlayerId : PlayerId.Substring(0, 6);
+        public string DisplayName => IsCurrentPlayer ? $"{PlayerName} (Ty)" : PlayerName;
 
         public int Score
         {

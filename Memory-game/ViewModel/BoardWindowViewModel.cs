@@ -15,6 +15,7 @@ namespace Memory_game.ViewModel
         private int _myScore;
         private string _myPlayerId;
         private Dictionary<string, int> _allScores = new Dictionary<string, int>();
+        private Dictionary<string, string> _playerNames = new Dictionary<string, string>();
         private string _currentTurnText = string.Empty;
         private bool _isProcessingMove;
         private bool _hasHandledFatalDisconnect;
@@ -111,8 +112,11 @@ namespace Memory_game.ViewModel
             _columns = gameState.settings.Columns;
             _myPlayerId = lobbyService.PlayerToken;
             _allScores = new Dictionary<string, int>(gameState.Scores);
+            _playerNames = new Dictionary<string, string>(gameState.PlayerNames);
             if (!_allScores.ContainsKey(_myPlayerId))
                 _allScores[_myPlayerId] = 0;
+            if (!_playerNames.ContainsKey(_myPlayerId))
+                _playerNames[_myPlayerId] = _myPlayerId;
             _myScore = _allScores[_myPlayerId];
             CanInteract = true;
             _turnTimeSeconds = gameState.settings.TurnTimeSeconds;
@@ -131,7 +135,7 @@ namespace Memory_game.ViewModel
             _lobbyService.OnPlayerDisconnected += HandlePlayerDisconnected;
             _lobbyService.OnWaitingForPlayers += HandleWaitingForPlayers;
 
-            InitializeCards(gameState.CardsOnBoard ,deckName);
+            InitializeCards(gameState.CardsOnBoard, deckName);
             InitializeScoreBoard();
         }
 
@@ -202,7 +206,7 @@ namespace Memory_game.ViewModel
             ScoreBoard.Clear();
 
             foreach (var score in GetOrderedScores())
-                ScoreBoard.Add(new PlayerScoreViewModel(score.Key, score.Key == _myPlayerId, score.Value));
+                ScoreBoard.Add(new PlayerScoreViewModel(GetPlayerName(score.Key), score.Key == _myPlayerId, score.Value));
         }
 
         private void UpdateScoreBoard()
@@ -210,7 +214,7 @@ namespace Memory_game.ViewModel
             ScoreBoard.Clear();
 
             foreach (var score in GetOrderedScores())
-                ScoreBoard.Add(new PlayerScoreViewModel(score.Key, score.Key == _myPlayerId, score.Value));
+                ScoreBoard.Add(new PlayerScoreViewModel(GetPlayerName(score.Key), score.Key == _myPlayerId, score.Value));
 
             MyScore = _allScores.GetValueOrDefault(_myPlayerId, 0);
         }
@@ -247,13 +251,13 @@ namespace Memory_game.ViewModel
 
                 if (currentPlayerId == _lobbyService.PlayerToken)
                 {
-                    CurrentTurnText = "Twoja tura";
+                    CurrentTurnText = $"Twoja tura: {GetPlayerName(currentPlayerId)}";
                     CanInteract = true;
                     StartTimer();
                 }
                 else
                 {
-                    CurrentTurnText = "Tura innego gracza";
+                    CurrentTurnText = $"Tura gracza: {GetPlayerName(currentPlayerId)}";
                     CanInteract = false;
                 }
             });
@@ -342,7 +346,7 @@ namespace Memory_game.ViewModel
                     "\n",
                     GetOrderedScores().Select(score =>
                     {
-                        string playerName = score.Key == _myPlayerId ? "Ty" : $"Gracz {GetShortPlayerId(score.Key)}";
+                        string playerName = score.Key == _myPlayerId ? $"{GetPlayerName(score.Key)} (Ty)" : GetPlayerName(score.Key);
                         return $"{playerName}: {score.Value}";
                     }));
 
@@ -367,6 +371,14 @@ namespace Memory_game.ViewModel
                     });
                 }
             });
+        }
+
+        private string GetPlayerName(string playerId)
+        {
+            if (_playerNames.ContainsKey(playerId) && !string.IsNullOrWhiteSpace(_playerNames[playerId]))
+                return _playerNames[playerId];
+
+            return GetShortPlayerId(playerId);
         }
 
         private string GetShortPlayerId(string playerId)
@@ -408,8 +420,8 @@ namespace Memory_game.ViewModel
                 };
 
                 MessageBox.Show(message);
-                
-                foreach(Window window in Application.Current.Windows)
+
+                foreach (Window window in Application.Current.Windows)
                 {
                     if (window is BoardWindow boardWindow)
                     {
@@ -417,7 +429,7 @@ namespace Memory_game.ViewModel
                         break;
                     }
                 }
-              
+
             });
 
         }
@@ -447,7 +459,7 @@ namespace Memory_game.ViewModel
                 _lastServerService.ClearLastServerAddress();
                 await _serverManager.StopServerAsync();
             }
-  
+
         }
 
     }

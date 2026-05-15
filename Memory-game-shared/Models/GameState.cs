@@ -11,6 +11,7 @@ namespace Memory_game_shared.Models
         public List<Card> CardsOnBoard { get; set; } = new List<Card>();
         public string CurrentPlayerId { get; set; }
         public Dictionary<string, int> Scores { get; set; } = new Dictionary<string, int>();
+        public Dictionary<string, string> PlayerNames { get; set; } = new Dictionary<string, string>();
         public bool IsGameOver { get; set; }
         public GameSettings settings { get; set; }
         public string HostId { get; set; } = string.Empty;

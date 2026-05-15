@@ -22,6 +22,7 @@ namespace Memory_game.Model.Services.Impl
         public event Action<string> OnPlayerDisconnected;
         public event Action<int, int> OnWaitingForPlayers;
         public string PlayerToken => _playerTokenService.PlayerToken;
+        public string PlayerNickName { get; set; } = string.Empty;
 
         public string MyConnectionId => connection?.ConnectionId ?? "";
 
@@ -46,7 +47,8 @@ namespace Memory_game.Model.Services.Impl
                 await connection.StartAsync();
 
                 Debug.WriteLine($"Connection status: {connection.State}");
-            }catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Debug.WriteLine(e.Message);
             }
@@ -121,24 +123,24 @@ namespace Memory_game.Model.Services.Impl
             if (connection == null)
                 return;
 
-            await connection.InvokeAsync(HubMethods.JoinGame, PlayerToken);
+            await connection.InvokeAsync(HubMethods.JoinGame, PlayerToken, PlayerNickName);
         }
 
         public async Task DisconnectAsync()
         {
-            if(connection != null)
+            if (connection != null)
                 await connection.StopAsync();
         }
 
         public async Task CreateNewGame(GameSettings gameSettings)
         {
-            if(connection != null)
-            await connection.InvokeAsync(HubMethods.CreateNewGame, gameSettings, PlayerToken);
+            if (connection != null)
+                await connection.InvokeAsync(HubMethods.CreateNewGame, gameSettings, PlayerToken, PlayerNickName);
         }
 
         public async Task SendFlipCardAsync(int cardId)
         {
-            if(connection != null)
+            if (connection != null)
                 await connection.InvokeAsync(HubMethods.FlipCard, cardId);
         }
 

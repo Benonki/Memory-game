@@ -19,6 +19,7 @@ namespace Memory_game.Model.Services
         public event Action<int, int> OnWaitingForPlayers;
 
         public string PlayerToken { get; }
+        public string PlayerNickName { get; set; }
         public string MyConnectionId { get; }
         public Task SendFlipCardAsync(int cardId);
         public Task CreateNewGame(GameSettings gameSettings);
