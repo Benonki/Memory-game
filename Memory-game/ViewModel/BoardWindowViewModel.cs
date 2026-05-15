@@ -116,7 +116,7 @@ namespace Memory_game.ViewModel
             if (!_allScores.ContainsKey(_myPlayerId))
                 _allScores[_myPlayerId] = 0;
             if (!_playerNames.ContainsKey(_myPlayerId))
-                _playerNames[_myPlayerId] = _myPlayerId;
+                _playerNames[_myPlayerId] = GetShortPlayerId(_myPlayerId);
             _myScore = _allScores[_myPlayerId];
             CanInteract = true;
             _turnTimeSeconds = gameState.settings.TurnTimeSeconds;
@@ -383,7 +383,10 @@ namespace Memory_game.ViewModel
 
         private string GetShortPlayerId(string playerId)
         {
-            return playerId.Length <= 6 ? playerId : playerId.Substring(0, 6);
+            if (string.IsNullOrWhiteSpace(playerId))
+                return string.Empty;
+
+            return playerId.Length <= 8 ? playerId : playerId.Substring(0, 8);
         }
 
         private async Task FlipCard(CardViewModel card)

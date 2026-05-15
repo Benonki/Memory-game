@@ -165,7 +165,7 @@ namespace Memory_game_server.Hubs
         private string GetDisplayName(string playerToken, string nickName)
         {
             if (string.IsNullOrWhiteSpace(nickName))
-                return playerToken;
+                return GetShortToken(playerToken);
 
             nickName = nickName.Trim();
 
@@ -173,6 +173,14 @@ namespace Memory_game_server.Hubs
                 nickName = nickName.Substring(0, 8);
 
             return nickName;
+        }
+
+        private string GetShortToken(string playerToken)
+        {
+            if (string.IsNullOrWhiteSpace(playerToken))
+                return string.Empty;
+
+            return playerToken.Length <= 8 ? playerToken : playerToken.Substring(0, 8);
         }
 
         private string GetTokenByConnectionId(string connectionId)
